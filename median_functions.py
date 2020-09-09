@@ -190,12 +190,20 @@ class getMedianFunctions:
         """Removes the plugin menu item and icon from QGIS GUI."""
         file_path = self.dlg.OutputFile.text()
         file_name = self.get_save_file_name()
+
         for action in self.actions:
             self.iface.removePluginVectorMenu(
                 self.tr(u'&get Median Functions'),
                 action)
             self.iface.removeToolBarIcon(action)
+
+
+        # Method 1
         iface.addRasterLayer(file_path, file_name)
+
+        # Method 2
+        #rlayer = QgsRasterLayer(file_path, file_name)
+        #QgsProject.instance().addMapLayer(rlayer)
 
 
     # Updates the method list for the chosen module
@@ -265,7 +273,7 @@ class getMedianFunctions:
 
     # It is assumed that the biggest argument count for a method is 7
     def method_function_call_helper(self, moduleCalled, methodCalled, parameterList, imageArgument):
-
+        ## Make this function different so it doesn't have to assume that there are 7 arguments
         # This should have 0 arguments
         if (len(parameterList) == 0):
             return getattr(moduleCalled, methodCalled)()
@@ -314,10 +322,10 @@ class getMedianFunctions:
                 "Error", "Something went wrong",
                 level=Qgis.Success, duration=3
             )
+
     def get_list_from_user_parameters(self):
         stringList = []
 
-        # TODO: This seems to be always empty or isn't string
         parameterString = str(self.dlg.Parameters.text())
         tempArgument = ""
         for x in range(len(parameterString)):
@@ -337,19 +345,19 @@ class getMedianFunctions:
         parameterList = self.get_list_from_user_parameters()
 
         # Finds which method to use
+        # Module is filters
         if (self.dlg.ModuleBox.currentIndex() == 0):
-            # Module is filters
             functionToCall = self.method_function_call_helper(filters, methodChosen, parameterList, imageArgument)
 
+        # Module is morphology
         elif (self.dlg.ModuleBox.currentIndex() == 1):
-            # Module is morphology
             functionToCall = self.method_function_call_helper(morphology, methodChosen, parameterList, imageArgument)
 
+        # Module is segmentation
         elif (self.dlg.ModuleBox.currentIndex() == 2):
-            # Module is segmentation
             functionToCall = self.method_function_call_helper(segmentation, methodChosen, parameterList, imageArgument)
 
-        # Should return a 2D image
+        # Should return a numpy array of 2D or 3D
         return functionToCall
 
     def get_save_file_name(self):
@@ -407,13 +415,13 @@ class getMedianFunctions:
             file_name = self.dlg.OutputFile.text()
             x_pixels = im.shape[0]
             y_pixels = im.shape[1]
-            driver = gdal.GetDriverByName('GTiff')
 
+            driver = gdal.GetDriverByName('GTiff')
             dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+
             # Get the arguments for method to check if image is included
             methodArguments = self.get_arguments_for_method()
             isImageIncluded = re.search("image", methodArguments)
-
 
             # If image is included
             if (isImageIncluded):
@@ -422,7 +430,7 @@ class getMedianFunctions:
                 resultArray = self.method_function_call(im)
                 #QMessageBox.information(None, "Test", str(resultArray))
 
-                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                #dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
                 ## Check how many dimensions the result array has
                 # If result array has two dimensions do....
@@ -430,21 +438,22 @@ class getMedianFunctions:
                     #dataset.GetRasterBand(0).WriteArray(resultArray)
 
                 # If result array has three dimensions do....
-                #elif( resultArray.ndim == 3):
-                r_pixels = resultArray[:,:,0]
-                g_pixels = resultArray[:,:,1]
-                b_pixels = resultArray[:,:,2]
-                QMessageBox.information(None, "Test", str(r_pixels))
+                if( resultArray.ndim == 3):
+                    r_pixels = resultArray[:,:,0]
+                    g_pixels = resultArray[:,:,1]
+                    b_pixels = resultArray[:,:,2]
+                    #QMessageBox.information(None, "Test", str(r_pixels))
 
-                #QMessageBox.information(None, "Test", str((resultArray)))
-                dataset.GetRasterBand(1).WriteArray(r_pixels)
-                dataset.GetRasterBand(2).WriteArray(g_pixels)
-                dataset.GetRasterBand(3).WriteArray(b_pixels)
+                    #QMessageBox.information(None, "Test", str((resultArray)))
+                    dataset.GetRasterBand(1).WriteArray(r_pixels)
+                    dataset.GetRasterBand(2).WriteArray(g_pixels)
+                    dataset.GetRasterBand(3).WriteArray(b_pixels)
 
                 geotrans = gdalIm.GetGeoTransform()
                 proj = gdalIm.GetProjection()
                 dataset.SetGeoTransform(geotrans)
                 dataset.SetProjection(proj)
+                dataset.FlushCache()
 
             # If image isn't included
             else:
@@ -454,7 +463,7 @@ class getMedianFunctions:
             #if not rlayer.isValid():
             #    QMessageBox.information(None, "Test", "Layer failed to load")
             # Imports the image as a raster layer
-            rlayer = QgsRasterLayer(file_name, "test4")
+            #rlayer = QgsRasterLayer(file_name, "test4")
             #iface.addRasterLayer("C:/Users/Nils/Desktop/Kristaps/test4.tif", "test4")
             #QgsProject.instance().addMapLayer(rlayer)
 
