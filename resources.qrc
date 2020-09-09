@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/median_functions" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
