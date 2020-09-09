@@ -199,11 +199,11 @@ class getMedianFunctions:
 
 
         # Method 1
-        iface.addRasterLayer(file_path, file_name)
+        #iface.addRasterLayer(file_path, file_name)
 
         # Method 2
-        #rlayer = QgsRasterLayer(file_path, file_name)
-        #QgsProject.instance().addMapLayer(rlayer)
+        rlayer = QgsRasterLayer(file_path, file_name)
+        QgsProject.instance().addMapLayer(rlayer)
 
 
     # Updates the method list for the chosen module
@@ -241,8 +241,9 @@ class getMedianFunctions:
 
     def get_arguments_for_method(self):
         # Gets the chosen method
+        chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
+
         try:
-            chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
             methodParameters = inspect.getfullargspec(getattr(filters, chosenMethod))
         except TypeError:
             self.dlg.Parameters.setText("No arguments for chosen function")
@@ -434,11 +435,11 @@ class getMedianFunctions:
 
                 ## Check how many dimensions the result array has
                 # If result array has two dimensions do....
-                #if( resultArray.ndim == 2):
-                    #dataset.GetRasterBand(0).WriteArray(resultArray)
+                if( resultArray.ndim == 2):
+                    dataset.GetRasterBand(0).WriteArray(resultArray)
 
                 # If result array has three dimensions do....
-                if( resultArray.ndim == 3):
+                elif( resultArray.ndim == 3):
                     r_pixels = resultArray[:,:,0]
                     g_pixels = resultArray[:,:,1]
                     b_pixels = resultArray[:,:,2]
@@ -462,10 +463,6 @@ class getMedianFunctions:
 
             #if not rlayer.isValid():
             #    QMessageBox.information(None, "Test", "Layer failed to load")
-            # Imports the image as a raster layer
-            #rlayer = QgsRasterLayer(file_name, "test4")
-            #iface.addRasterLayer("C:/Users/Nils/Desktop/Kristaps/test4.tif", "test4")
-            #QgsProject.instance().addMapLayer(rlayer)
 
             self.iface.messageBar().pushMessage(
                 "Success", "Output file written at " + file_name,
