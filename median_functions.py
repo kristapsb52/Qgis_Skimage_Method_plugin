@@ -258,8 +258,8 @@ class getMedianFunctions:
         methodArguments = methodParameters.args
 
         # Sets arguments to String
-        methodArgumentsString = ", "
-        return methodArgumentsString.join(methodArguments)
+        methodArgumentsString = "= , "
+        return methodArgumentsString.join(methodArguments) + "= "
 
     # Updates the parameters for the chosen method
     def update_parameters(self):
@@ -323,6 +323,7 @@ class getMedianFunctions:
                 "Error", "Something went wrong",
                 level=Qgis.Success, duration=3
             )
+
 
     def get_list_from_user_parameters(self):
         stringList = []
