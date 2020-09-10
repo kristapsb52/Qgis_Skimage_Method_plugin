@@ -199,11 +199,11 @@ class getMedianFunctions:
 
 
         # Method 1
-        #iface.addRasterLayer(file_path, file_name)
+        iface.addRasterLayer(file_path, file_name)
 
         # Method 2
-        rlayer = QgsRasterLayer(file_path, file_name)
-        QgsProject.instance().addMapLayer(rlayer)
+        #rlayer = QgsRasterLayer(file_path, file_name)
+        #QgsProject.instance().addMapLayer(rlayer)
 
 
     # Updates the method list for the chosen module
@@ -369,8 +369,7 @@ class getMedianFunctions:
             if(fullFileName[i] != '.'):
                 file_name += fullFileName[i]
             elif(fullFileName[i] == '.'):
-                break
-
+                return file_name
 
 
     def run(self):
@@ -427,17 +426,17 @@ class getMedianFunctions:
             # If image is included
             if (isImageIncluded):
                 # Convert the image to a 2d array
-                #im_r = im[:,:,0]
-                #im_g = im[:,:,1]
-                #im_b = im[:,:,2]
+                im_r = im[:,:,0]
+                im_g = im[:,:,1]
+                im_b = im[:,:,2]
 
                 # Pass the image to the function
                 # The function then calls the method with a 2D array of numpy as one of its arguments
-                resultArray = self.method_function_call(im)
+                #resultArray = self.method_function_call(im)
 
-                #resultArray_r = self.method_function_call(im_r)
-                #resultArray_g = self.method_function_call(im_g)
-                #resultArray_b = self.method_function_call(im_b)
+                resultArray_r = self.method_function_call(im_r)
+                resultArray_g = self.method_function_call(im_g)
+                resultArray_b = self.method_function_call(im_b)
                 #QMessageBox.information(None, "Test", str(resultArray))
 
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
@@ -445,19 +444,17 @@ class getMedianFunctions:
                 ## Check how many dimensions the result array has
                 # If result array has two dimensions do....
                 #if( resultArray.ndim == 2):
+                    #QMessageBox.information(None, "Test", str(resultArray.shape))
                     #dataset.GetRasterBand(1).WriteArray(resultArray)
 
                 # If result array has three dimensions do....
                 #elif( resultArray.ndim == 3):
-                r_pixels = resultArray[:,:,0]
-                g_pixels = resultArray[:,:,1]
-                b_pixels = resultArray[:,:,2]
-                    #QMessageBox.information(None, "Test", str(r_pixels))
-
-                    #QMessageBox.information(None, "Test", str((resultArray)))
-                dataset.GetRasterBand(1).WriteArray(r_pixels)
-                dataset.GetRasterBand(2).WriteArray(g_pixels)
-                dataset.GetRasterBand(3).WriteArray(b_pixels)
+                #r_pixels = resultArray[:,:,0]
+                #g_pixels = resultArray[:,:,1]
+                #b_pixels = resultArray[:,:,2]
+                dataset.GetRasterBand(1).WriteArray(resultArray_r)
+                dataset.GetRasterBand(2).WriteArray(resultArray_g)
+                dataset.GetRasterBand(3).WriteArray(resultArray_b)
 
                 geotrans = gdalIm.GetGeoTransform()
                 proj = gdalIm.GetProjection()

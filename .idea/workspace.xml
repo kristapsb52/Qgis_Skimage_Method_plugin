@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e68ff077-b44c-4d6d-ac52-c4eb4d256531" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/median_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/median_functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,5 +47,11 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-1828" y="213" width="1736" height="856" key="DiffContextDialog" timestamp="1599722187558">
+      <screen x="-1920" y="121" width="1920" height="1040" />
+    </state>
+    <state x="-1828" y="213" width="1736" height="856" key="DiffContextDialog/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1599722187558" />
   </component>
 </project>
