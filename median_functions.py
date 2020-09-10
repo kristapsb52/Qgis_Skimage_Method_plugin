@@ -46,7 +46,6 @@ import inspect
 import re
 import gdal
 
-
 class getMedianFunctions:
     """QGIS Plugin Implementation."""
 
@@ -273,57 +272,9 @@ class getMedianFunctions:
         self.dlg.OutputFile.setText(filename)
 
     # It is assumed that the biggest argument count for a method is 7
-    def method_function_call_helper(self, moduleCalled, methodCalled, parameterList, imageArgument):
-        ## Make this function different so it doesn't have to assume that there are 7 arguments
-        # This should have 0 arguments
-        if (len(parameterList) == 0):
-            return getattr(moduleCalled, methodCalled)(imageArgument)
-
-        elif (len(parameterList) == 1):
-            return getattr(moduleCalled, methodCalled)(imageArgument)
-
-        elif (len(parameterList) == 2):
-            return getattr(moduleCalled, methodCalled)(imageArgument, parameterList[1])
-
-        elif (len(parameterList) == 3):
-            return getattr(moduleCalled, methodCalled)(imageArgument, parameterList[1], parameterList[2])
-
-        elif (len(parameterList) == 4):
-            return getattr(moduleCalled, methodCalled)(imageArgument,
-                                                       parameterList[1],
-                                                       parameterList[2],
-                                                       parameterList[3])
-
-        elif (len(parameterList) == 5):
-            return getattr(moduleCalled, methodCalled)(imageArgument,
-                                                       parameterList[1],
-                                                       parameterList[2],
-                                                       parameterList[3],
-                                                       parameterList[4])
-
-        elif (len(parameterList) == 6):
-            return getattr(moduleCalled, methodCalled)(imageArgument,
-                                                       parameterList[1],
-                                                       parameterList[2],
-                                                       parameterList[3],
-                                                       parameterList[4],
-                                                       parameterList[5])
-
-        elif (len(parameterList) == 7):
-            return getattr(moduleCalled, methodCalled)(imageArgument,
-                                                       parameterList[1],
-                                                       parameterList[2],
-                                                       parameterList[3],
-                                                       parameterList[4],
-                                                       parameterList[5],
-                                                       parameterList[6])
-
-        else:
-            self.iface.messageBar().pushMessage(
-                "Error", "Something went wrong",
-                level=Qgis.Success, duration=3
-            )
-
+    def method_function_call_helper(self, methodCalled, parameterList, imageArgument):
+        if (methodCalled == "median"):
+            return my_median(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -344,7 +295,7 @@ class getMedianFunctions:
     def method_function_call(self, imageArgument):
         methodChosen = self.dlg.AvailableFunctionsBox.currentText()
         # Takes the user parameters
-        parameterList = self.get_list_from_user_parameters()
+        parameterList = self.dlg.Parameters.text()
 
         # Finds which method to use
         # Module is filters
@@ -475,3 +426,98 @@ class getMedianFunctions:
                 "Success", "Output file written at " + file_name,
                 level=Qgis.Success, duration=3
             )
+
+    # Returns a list of parameter names
+    def get_list_of_names(parameter_string):
+        tempList = re.findall("\w+=", parameter_string)
+        for x in range(len(tempList)):
+            tempList[x] = tempList[x].replace('=', '')
+
+        return tempList
+
+    # Returns a list of parameter values
+    def get_list_of_values(parameter_string):
+        resultList = []
+        tempString = ""
+        startOfParameter = False
+        for x in range(len(parameter_string)):
+            if (parameter_string[x] == ','):
+                startOfParameter = False
+                resultList.append(tempString)
+                tempString = ""
+            if (startOfParameter):
+                tempString += parameter_string[x]
+                if (x == len(parameter_string) - 1):
+                    resultList.append(tempString)
+            if (parameter_string[x] == '='):
+                startOfParameter = True
+                if (parameter_string[x + 1] == " "):
+                    x += 1
+
+        return resultList
+
+    ## Calls Segmentation functions
+    # Calls clear_border method
+    def my_clear_border(self):
+        pass
+        # result = segmentation.clear_border(labels= , buffer_size=, bgval= , in_place= , mask=)
+
+        # return result
+
+    # Calls find_boundaries method
+    def my_find_boundaries(self):
+        pass
+        # result = segmentation.find_boundaries(label_img= , connectivity=, mode= , background=)
+
+        # return result
+
+    # Calls quickshift method
+    def my_quickshift(self):
+        pass
+        # result = segmentation.quickshift(image= , ratio= , kernel_size= , max_dist= , return_tree= , sigma= , convert2lab= , random_seed=)
+
+        # return result
+
+    # Calls slic method
+    def my_slic(self):
+        pass
+        # result = segmentation.slic(image= , n_segments= , compactness= , max_iter= , sigma= , spacing= , multichannel= , convert2lab= ,
+        # enforce_connectivity= ,min_size_factor= , max_size_factor= , slic_zero=)
+
+    # return result
+
+    ## Calls Filters functions
+    # Calls gaussian method
+
+    # Calls laplace method
+
+    # Calls Median method
+    def my_median(self, image_value, parameter_string):
+        parameter_names = self.get_list_of_names(parameter_string)
+        parameter_values = self.get_list_of_values(parameter_string)
+        included_parameters = [("selem", True), ("out", True), ("mode", True), ("cval", True), ("behavior", True)]
+
+        for i in range(len(parameter_names)):
+            for j in range(len(included_parameters)):
+                if (parameter_names[i] == included_parameters[j]):
+                    included_parameters[j][1] = parameter_values[i]
+                    break
+
+        result = filters.median(image=image_value, selem=included_parameters[0][1],
+                                out=included_parameters[1][1],
+                                mode=included_parameters[2][1],
+                                cval=included_parameters[3][1],
+                                behavior=included_parameters[4][1])
+
+        return result
+    # Calls Sobel method
+
+    # Calls Sobel_v method
+
+    # Calls Sobel_h method
+
+    # Calls threshold_local method
+
+    # Calls threshold_otsu method
+
+    # Calls unsharp_mask method
