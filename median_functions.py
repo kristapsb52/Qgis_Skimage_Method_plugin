@@ -277,7 +277,7 @@ class getMedianFunctions:
         ## Make this function different so it doesn't have to assume that there are 7 arguments
         # This should have 0 arguments
         if (len(parameterList) == 0):
-            return getattr(moduleCalled, methodCalled)()
+            return getattr(moduleCalled, methodCalled)(imageArgument)
 
         elif (len(parameterList) == 1):
             return getattr(moduleCalled, methodCalled)(imageArgument)
@@ -418,7 +418,7 @@ class getMedianFunctions:
             y_pixels = im.shape[1]
 
             driver = gdal.GetDriverByName('GTiff')
-            dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+            #dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
             # Get the arguments for method to check if image is included
             methodArguments = self.get_arguments_for_method()
@@ -426,29 +426,38 @@ class getMedianFunctions:
 
             # If image is included
             if (isImageIncluded):
+                # Convert the image to a 2d array
+                #im_r = im[:,:,0]
+                #im_g = im[:,:,1]
+                #im_b = im[:,:,2]
+
                 # Pass the image to the function
                 # The function then calls the method with a 2D array of numpy as one of its arguments
                 resultArray = self.method_function_call(im)
+
+                #resultArray_r = self.method_function_call(im_r)
+                #resultArray_g = self.method_function_call(im_g)
+                #resultArray_b = self.method_function_call(im_b)
                 #QMessageBox.information(None, "Test", str(resultArray))
 
-                #dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
                 ## Check how many dimensions the result array has
                 # If result array has two dimensions do....
-                if( resultArray.ndim == 2):
-                    dataset.GetRasterBand(0).WriteArray(resultArray)
+                #if( resultArray.ndim == 2):
+                    #dataset.GetRasterBand(1).WriteArray(resultArray)
 
                 # If result array has three dimensions do....
-                elif( resultArray.ndim == 3):
-                    r_pixels = resultArray[:,:,0]
-                    g_pixels = resultArray[:,:,1]
-                    b_pixels = resultArray[:,:,2]
+                #elif( resultArray.ndim == 3):
+                r_pixels = resultArray[:,:,0]
+                g_pixels = resultArray[:,:,1]
+                b_pixels = resultArray[:,:,2]
                     #QMessageBox.information(None, "Test", str(r_pixels))
 
                     #QMessageBox.information(None, "Test", str((resultArray)))
-                    dataset.GetRasterBand(1).WriteArray(r_pixels)
-                    dataset.GetRasterBand(2).WriteArray(g_pixels)
-                    dataset.GetRasterBand(3).WriteArray(b_pixels)
+                dataset.GetRasterBand(1).WriteArray(r_pixels)
+                dataset.GetRasterBand(2).WriteArray(g_pixels)
+                dataset.GetRasterBand(3).WriteArray(b_pixels)
 
                 geotrans = gdalIm.GetGeoTransform()
                 proj = gdalIm.GetProjection()
