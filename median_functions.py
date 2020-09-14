@@ -45,6 +45,7 @@ import os.path
 import inspect
 import re
 import gdal
+from .method_call import *
 
 class getMedianFunctions:
     """QGIS Plugin Implementation."""
@@ -274,7 +275,9 @@ class getMedianFunctions:
     # It is assumed that the biggest argument count for a method is 7
     def method_function_call_helper(self, methodCalled, parameterList, imageArgument):
         if (methodCalled == "median"):
-            return self.my_median(imageArgument, parameterList)
+            return my_median(imageArgument, parameterList)
+        elif (methodCalled == "slic"):
+            return my_slic(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -378,17 +381,17 @@ class getMedianFunctions:
             # If image is included
             if (isImageIncluded):
                 # Convert the image to a 2d array
-                im_r = im[:,:,0]
-                im_g = im[:,:,1]
-                im_b = im[:,:,2]
+                #im_r = im[:,:,0]
+                #im_g = im[:,:,1]
+                #im_b = im[:,:,2]
 
                 # Pass the image to the function
                 # The function then calls the method with a 2D array of numpy as one of its arguments
                 #resultArray = self.method_function_call(im)
 
-                resultArray_r = self.method_function_call(im_r)
-                resultArray_g = self.method_function_call(im_g)
-                resultArray_b = self.method_function_call(im_b)
+                resultArray = self.method_function_call(im)
+                #resultArray_g = self.method_function_call(im_g)
+                #resultArray_b = self.method_function_call(im_b)
                 #QMessageBox.information(None, "Test", str(resultArray))
 
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
@@ -404,9 +407,9 @@ class getMedianFunctions:
                 #r_pixels = resultArray[:,:,0]
                 #g_pixels = resultArray[:,:,1]
                 #b_pixels = resultArray[:,:,2]
-                dataset.GetRasterBand(1).WriteArray(resultArray_r)
-                dataset.GetRasterBand(2).WriteArray(resultArray_g)
-                dataset.GetRasterBand(3).WriteArray(resultArray_b)
+                dataset.GetRasterBand(2).WriteArray(resultArray)
+                #dataset.GetRasterBand(2).WriteArray(resultArray[:,:,1])
+                #dataset.GetRasterBand(3).WriteArray(resultArray[:,:,2])
 
                 geotrans = gdalIm.GetGeoTransform()
                 proj = gdalIm.GetProjection()
@@ -432,96 +435,3 @@ class getMedianFunctions:
 ######################################################
 ######################################################
 
-    # Returns a list of parameter names
-    def get_list_of_names(self, parameter_string):
-        tempList = re.findall("\w+=", parameter_string)
-        for x in range(len(tempList)):
-            tempList[x] = tempList[x].replace('=', '')
-
-        return tempList
-
-    # Returns a list of parameter values
-    def get_list_of_values(self, parameter_string):
-        resultList = []
-        tempString = ""
-        startOfParameter = False
-        for x in range(len(parameter_string)):
-            if (parameter_string[x] == ','):
-                startOfParameter = False
-                resultList.append(tempString)
-                tempString = ""
-            if (startOfParameter):
-                tempString += parameter_string[x]
-                if (x == len(parameter_string) - 1):
-                    resultList.append(tempString)
-            if (parameter_string[x] == '='):
-                startOfParameter = True
-                if (parameter_string[x + 1] == " "):
-                    x += 1
-
-        return resultList
-
-    ## Calls Segmentation functions
-    # Calls clear_border method
-    def my_clear_border(self):
-        pass
-        # result = segmentation.clear_border(labels= , buffer_size=, bgval= , in_place= , mask=)
-
-        # return result
-
-    # Calls find_boundaries method
-    def my_find_boundaries(self):
-        pass
-        # result = segmentation.find_boundaries(label_img= , connectivity=, mode= , background=)
-
-        # return result
-
-    # Calls quickshift method
-    def my_quickshift(self):
-        pass
-        # result = segmentation.quickshift(image= , ratio= , kernel_size= , max_dist= , return_tree= , sigma= , convert2lab= , random_seed=)
-
-        # return result
-
-    # Calls slic method
-    def my_slic(self):
-        pass
-        # result = segmentation.slic(image= , n_segments= , compactness= , max_iter= , sigma= , spacing= , multichannel= , convert2lab= ,
-        # enforce_connectivity= ,min_size_factor= , max_size_factor= , slic_zero=)
-
-    # return result
-
-    ## Calls Filters functions
-    # Calls gaussian method
-
-    # Calls laplace method
-
-    # Calls Median method
-    def my_median(self, image_value, parameter_string):
-        parameter_names = self.get_list_of_names(parameter_string)
-        parameter_values = self.get_list_of_values(parameter_string)
-        included_parameters = [["selem", True], ["out", True], ["mode", True], ["cval", True], ["behavior", True]]
-
-        for i in range(len(parameter_names)):
-            for j in range(len(included_parameters)):
-                if (parameter_names[i] == included_parameters[j][0]):
-                    included_parameters[j][1] = parameter_values[i]
-                    break
-        cvalStringToInt = int(included_parameters[3][1])
-        selemStringToInt = int(included_parameters[0][1])
-
-        result = filters.median(image=image_value, selem=disk(selemStringToInt), mode=included_parameters[2][1], cval=cvalStringToInt,
-                                behavior=included_parameters[4][1])
-
-        return result
-    # Calls Sobel method
-
-    # Calls Sobel_v method
-
-    # Calls Sobel_h method
-
-    # Calls threshold_local method
-
-    # Calls threshold_otsu method
-
-    # Calls unsharp_mask method
