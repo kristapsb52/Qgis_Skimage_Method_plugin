@@ -33,7 +33,7 @@ from skimage import morphology
 from skimage import segmentation
 from skimage import filters
 from skimage.io import imread
-
+from skimage.morphology import disk
 # Initialize Qt resources from file resources.py
 from .resources import *
 
@@ -274,7 +274,7 @@ class getMedianFunctions:
     # It is assumed that the biggest argument count for a method is 7
     def method_function_call_helper(self, methodCalled, parameterList, imageArgument):
         if (methodCalled == "median"):
-            return my_median(imageArgument, parameterList)
+            return self.my_median(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -300,15 +300,15 @@ class getMedianFunctions:
         # Finds which method to use
         # Module is filters
         if (self.dlg.ModuleBox.currentIndex() == 0):
-            functionToCall = self.method_function_call_helper(filters, methodChosen, parameterList, imageArgument)
+            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
 
         # Module is morphology
         elif (self.dlg.ModuleBox.currentIndex() == 1):
-            functionToCall = self.method_function_call_helper(morphology, methodChosen, parameterList, imageArgument)
+            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
 
         # Module is segmentation
         elif (self.dlg.ModuleBox.currentIndex() == 2):
-            functionToCall = self.method_function_call_helper(segmentation, methodChosen, parameterList, imageArgument)
+            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
 
         # Should return a numpy array of 2D or 3D
         return functionToCall
@@ -427,8 +427,13 @@ class getMedianFunctions:
                 level=Qgis.Success, duration=3
             )
 
+######################################################
+######################################################
+######################################################
+######################################################
+
     # Returns a list of parameter names
-    def get_list_of_names(parameter_string):
+    def get_list_of_names(self, parameter_string):
         tempList = re.findall("\w+=", parameter_string)
         for x in range(len(tempList)):
             tempList[x] = tempList[x].replace('=', '')
@@ -436,7 +441,7 @@ class getMedianFunctions:
         return tempList
 
     # Returns a list of parameter values
-    def get_list_of_values(parameter_string):
+    def get_list_of_values(self, parameter_string):
         resultList = []
         tempString = ""
         startOfParameter = False
@@ -495,18 +500,17 @@ class getMedianFunctions:
     def my_median(self, image_value, parameter_string):
         parameter_names = self.get_list_of_names(parameter_string)
         parameter_values = self.get_list_of_values(parameter_string)
-        included_parameters = [("selem", True), ("out", True), ("mode", True), ("cval", True), ("behavior", True)]
+        included_parameters = [["selem", True], ["out", True], ["mode", True], ["cval", True], ["behavior", True]]
 
         for i in range(len(parameter_names)):
             for j in range(len(included_parameters)):
-                if (parameter_names[i] == included_parameters[j]):
+                if (parameter_names[i] == included_parameters[j][0]):
                     included_parameters[j][1] = parameter_values[i]
                     break
+        cvalStringToInt = int(included_parameters[3][1])
+        selemStringToInt = int(included_parameters[0][1])
 
-        result = filters.median(image=image_value, selem=included_parameters[0][1],
-                                out=included_parameters[1][1],
-                                mode=included_parameters[2][1],
-                                cval=included_parameters[3][1],
+        result = filters.median(image=image_value, selem=disk(selemStringToInt), mode=included_parameters[2][1], cval=cvalStringToInt,
                                 behavior=included_parameters[4][1])
 
         return result
