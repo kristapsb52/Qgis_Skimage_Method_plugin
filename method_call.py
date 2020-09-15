@@ -120,6 +120,7 @@ def my_gaussian(image_value, parameter_string):
     param_sigma = int(included_parameters[0][1])
     param_cval = included_parameters[3][1]
     param_truncate = included_parameters[6][1]
+    param_multichannel = included_parameters[4][1]
 
     parameter_names_string = ""
     parameter_names_string = parameter_names_string.join(parameter_names)
@@ -127,13 +128,27 @@ def my_gaussian(image_value, parameter_string):
         param_cval = int(included_parameters[3][1])
     if (parameter_names_string.find("truncate") != -1):
         param_truncate = float(included_parameters[6][1])
+    if(parameter_names_string.find("multichannel") != -1):
+        param_multichannel = bool(included_parameters[4][1])
 
     result = filters.gaussian(image=image_value, sigma=param_sigma, output=included_parameters[1][1],
-                              mode=included_parameters[2][1], cval=param_cval, multichannel=included_parameters[4][1],
+                              mode=included_parameters[2][1], cval=param_cval, multichannel=param_multichannel,
                               preserve_range=included_parameters[5][1], truncate=param_truncate)
 
-    return result
+    return result * 100
 # Calls laplace method
+def my_laplace(image_value, parameter_string):
+    parameter_values = get_list_of_values(parameter_string)
+    parameter_names = get_list_of_names(parameter_string)
+    included_parameters = [["ksize", 3], ["mask", None]]
+
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    param_ksize = int(included_parameters[0][1])
+
+    result = filters.laplace(image=image_value, ksize=param_ksize, mask=included_parameters[1][1])
+
+    return result
 
 # Calls Median method
 def my_median(image_value, parameter_string):
