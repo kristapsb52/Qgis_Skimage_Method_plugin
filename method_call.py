@@ -96,7 +96,6 @@ def my_slic(image_value, parameter_string):
     if (parameter_names_string.find("max_size_factor") != -1):
         param_max_size_factor = int(included_parameters[9][1])
 
-    QMessageBox.information(None, "Test", str(included_parameters))
     result = segmentation.slic(image=image_value, n_segments=segments_string_to_int,
                             compactness=param_compactness, max_iter=param_max_iter,
                             sigma=param_sigma, spacing=included_parameters[4][1],
@@ -108,7 +107,32 @@ def my_slic(image_value, parameter_string):
 
 ## Calls Filters functions
 # Calls gaussian method
+def my_gaussian(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = [["sigma", 1], ["output", None], ["mode", "nearest"],
+                           ["cval", 0], ["multichannel", None], ["preserve_range", False],
+                           ["truncate", 4.0]]
 
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+    QMessageBox.information(None, "Test", str(included_parameters))
+
+    param_sigma = int(included_parameters[0][1])
+    param_cval = included_parameters[3][1]
+    param_truncate = included_parameters[6][1]
+
+    parameter_names_string = ""
+    parameter_names_string = parameter_names_string.join(parameter_names)
+    if (parameter_names_string.find("cval") != -1):
+        param_cval = int(included_parameters[3][1])
+    if (parameter_names_string.find("truncate") != -1):
+        param_truncate = float(included_parameters[6][1])
+
+    result = filters.gaussian(image=image_value, sigma=param_sigma, output=included_parameters[1][1],
+                              mode=included_parameters[2][1], cval=param_cval, multichannel=included_parameters[4][1],
+                              preserve_range=included_parameters[5][1], truncate=param_truncate)
+
+    return result
 # Calls laplace method
 
 # Calls Median method

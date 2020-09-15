@@ -278,6 +278,8 @@ class getMedianFunctions:
             return my_median(imageArgument, parameterList)
         elif (methodCalled == "slic"):
             return my_slic(imageArgument, parameterList)
+        elif(methodCalled == "gaussian"):
+            return my_gaussian(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -383,19 +385,18 @@ class getMedianFunctions:
                 # Convert the image to a 2d array
                 if(self.dlg.AvailableFunctionsBox.currentText() == "slic"):
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+
                     resultArray = self.method_function_call(im)
 
                     dataset.GetRasterBand(1).WriteArray(resultArray)
 
-                if(self.dlg.AvailableFunctionsBox.currentText() == "median"):
+                if(self.dlg.AvailableFunctionsBox.currentText() == "median" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian"):
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
-                    im_r = im[:,:,0]
-                    im_g = im[:,:,1]
-                    im_b = im[:,:,2]
 
-                    resultArray_r = self.method_function_call(im_r)
-                    resultArray_g = self.method_function_call(im_g)
-                    resultArray_b = self.method_function_call(im_b)
+                    resultArray_r = self.method_function_call(im[:,:,0])
+                    resultArray_g = self.method_function_call(im[:,:,1])
+                    resultArray_b = self.method_function_call(im[:,:,2])
 
                     dataset.GetRasterBand(1).WriteArray(resultArray_r)
                     dataset.GetRasterBand(2).WriteArray(resultArray_g)
