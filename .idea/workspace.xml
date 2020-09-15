@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="e68ff077-b44c-4d6d-ac52-c4eb4d256531" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/median_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/median_functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/method_call.py" beforeDir="false" afterPath="$PROJECT_DIR$/method_call.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

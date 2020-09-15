@@ -280,6 +280,8 @@ class getMedianFunctions:
             return my_slic(imageArgument, parameterList)
         elif(methodCalled == "gaussian"):
             return my_gaussian(imageArgument, parameterList)
+        elif(methodCalled == "sobel"):
+            return my_sobel(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -391,7 +393,8 @@ class getMedianFunctions:
                     dataset.GetRasterBand(1).WriteArray(resultArray)
 
                 if(self.dlg.AvailableFunctionsBox.currentText() == "median" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel"):
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
                     resultArray_r = self.method_function_call(im[:,:,0])
