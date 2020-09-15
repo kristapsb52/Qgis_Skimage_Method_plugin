@@ -173,16 +173,38 @@ def my_sobel(image_value, parameter_string):
     included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
 
     ## mask is an array of bool
-
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
     result = filters.sobel(image=image_value, mask=included_parameters[0][1])
 
     return result * 100
 
-# Calls Sobel_v method
-
 # Calls Sobel_h method
+def my_sobel_h(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
+
+    ## mask is an array of bool
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    result = filters.sobel_h(image=image_value, mask=included_parameters[0][1])
+
+    return result * 100
+
+# Calls Sobel_v method
+def my_sobel_v(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
+
+    ## mask is an array of bool
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    result = filters.sobel_h(image=image_value, mask=included_parameters[0][1])
+
+    return result * 100
+
 
 # Calls threshold_local method
 

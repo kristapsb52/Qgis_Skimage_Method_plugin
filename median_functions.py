@@ -282,6 +282,10 @@ class getMedianFunctions:
             return my_gaussian(imageArgument, parameterList)
         elif(methodCalled == "sobel"):
             return my_sobel(imageArgument, parameterList)
+        elif(methodCalled == "sobel_h"):
+            return my_sobel_h(imageArgument, parameterList)
+        elif(methodCalled == "sobel_v"):
+            return my_sobel_v(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -394,7 +398,10 @@ class getMedianFunctions:
 
                 if(self.dlg.AvailableFunctionsBox.currentText() == "median" or
                     self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_v"):
+
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
                     resultArray_r = self.method_function_call(im[:,:,0])
