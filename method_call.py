@@ -205,9 +205,26 @@ def my_sobel_v(image_value, parameter_string):
 
     return result * 100
 
-
 # Calls threshold_local method
+def my_threshold_local(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = [["block_size", 15], ["method", "gaussian"], ["offset", 0],
+                           ["mode", "reflect"], ["param", None], ["cval", 0]]
+
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+    param_block_size = int(included_parameters[0][1])
+
+
+    result = filters.threshold_local(image=image_value, block_size=param_block_size, method=included_parameters[1][1],
+                                     offset=included_parameters[2][1], mode=included_parameters[3][1], param=included_parameters[4][1],
+                                     cval=included_parameters[5][1])
+
+    return result
 
 # Calls threshold_otsu method
+def my_threshold_otsu(image_value, parameter_string):
+    result = filters.threshold_otsu(image_value)
+    return result
 
 # Calls unsharp_mask method

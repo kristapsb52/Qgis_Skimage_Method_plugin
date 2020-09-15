@@ -47,6 +47,7 @@ import re
 import gdal
 from .method_call import *
 
+
 class getMedianFunctions:
     """QGIS Plugin Implementation."""
 
@@ -97,18 +98,17 @@ class getMedianFunctions:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('getMedianFunctions', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -185,7 +185,6 @@ class getMedianFunctions:
         # will be set False in run()
         self.first_start = True
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         file_path = self.dlg.OutputFile.text()
@@ -197,14 +196,12 @@ class getMedianFunctions:
                 action)
             self.iface.removeToolBarIcon(action)
 
-
         # Method 1
         iface.addRasterLayer(file_path, file_name)
 
         # Method 2
-        #rlayer = QgsRasterLayer(file_path, file_name)
-        #QgsProject.instance().addMapLayer(rlayer)
-
+        # rlayer = QgsRasterLayer(file_path, file_name)
+        # QgsProject.instance().addMapLayer(rlayer)
 
     # Updates the method list for the chosen module
     def update_function_list(self):
@@ -214,7 +211,7 @@ class getMedianFunctions:
 
         # Reads the chosen module
         chosen_method = ""
-        if(self.dlg.ModuleBox.currentIndex == 0):
+        if (self.dlg.ModuleBox.currentIndex == 0):
             chosen_method = "Filter"
         elif (self.dlg.ModuleBox.currentIndex() == 1):
             chosen_method = "Morphology"
@@ -225,11 +222,11 @@ class getMedianFunctions:
         allmethods = []
         methodFound = False
         for line in method_file:
-            if(methodFound):
-                if(line == "\n"):
+            if (methodFound):
+                if (line == "\n"):
                     break
                 allmethods.append(line)
-            if(line == chosen_method + "\n"):
+            if (line == chosen_method + "\n"):
                 methodFound = True
 
         method_file.close()
@@ -278,14 +275,18 @@ class getMedianFunctions:
             return my_median(imageArgument, parameterList)
         elif (methodCalled == "slic"):
             return my_slic(imageArgument, parameterList)
-        elif(methodCalled == "gaussian"):
+        elif (methodCalled == "gaussian"):
             return my_gaussian(imageArgument, parameterList)
-        elif(methodCalled == "sobel"):
+        elif (methodCalled == "sobel"):
             return my_sobel(imageArgument, parameterList)
-        elif(methodCalled == "sobel_h"):
+        elif (methodCalled == "sobel_h"):
             return my_sobel_h(imageArgument, parameterList)
-        elif(methodCalled == "sobel_v"):
+        elif (methodCalled == "sobel_v"):
             return my_sobel_v(imageArgument, parameterList)
+        elif (methodCalled == "threshold_local"):
+            return my_threshold_local(imageArgument, parameterList)
+        elif (methodCalled == "threshold_otsu"):
+            return my_threshold_local(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -293,9 +294,9 @@ class getMedianFunctions:
         parameterString = str(self.dlg.Parameters.text())
         tempArgument = ""
         for x in range(len(parameterString)):
-            if(parameterString[x] != ','):
+            if (parameterString[x] != ','):
                 tempArgument += parameterString[x]
-            elif (parameterString[x] == ',' or x == len(parameterString)-1 ):
+            elif (parameterString[x] == ',' or x == len(parameterString) - 1):
                 stringList.append(tempArgument)
                 tempArgument = ""
                 x += 1
@@ -329,11 +330,10 @@ class getMedianFunctions:
         fullFileName = re.findall("(\w+[.]\w+)", saveString)
         file_name = ""
         for i in range(len(fullFileName)):
-            if(fullFileName[i] != '.'):
+            if (fullFileName[i] != '.'):
                 file_name += fullFileName[i]
-            elif(fullFileName[i] == '.'):
+            elif (fullFileName[i] == '.'):
                 return file_name
-
 
     def run(self):
         """Run method that performs all the real work"""
@@ -380,7 +380,7 @@ class getMedianFunctions:
             y_pixels = im.shape[1]
 
             driver = gdal.GetDriverByName('GTiff')
-            #dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+            # dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
             # Get the arguments for method to check if image is included
             methodArguments = self.get_arguments_for_method()
@@ -389,24 +389,25 @@ class getMedianFunctions:
             # If image is included
             if (isImageIncluded):
                 # Convert the image to a 2d array
-                if(self.dlg.AvailableFunctionsBox.currentText() == "slic"):
+                if (self.dlg.AvailableFunctionsBox.currentText() == "slic"):
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
                     resultArray = self.method_function_call(im)
 
                     dataset.GetRasterBand(1).WriteArray(resultArray)
 
-                if(self.dlg.AvailableFunctionsBox.currentText() == "median" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_v"):
-
+                if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
+                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu"):
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
-                    resultArray_r = self.method_function_call(im[:,:,0])
-                    resultArray_g = self.method_function_call(im[:,:,1])
-                    resultArray_b = self.method_function_call(im[:,:,2])
+                    resultArray_r = self.method_function_call(im[:, :, 0])
+                    resultArray_g = self.method_function_call(im[:, :, 1])
+                    resultArray_b = self.method_function_call(im[:, :, 2])
 
                     dataset.GetRasterBand(1).WriteArray(resultArray_r)
                     dataset.GetRasterBand(2).WriteArray(resultArray_g)
@@ -423,7 +424,7 @@ class getMedianFunctions:
                 # Do nothing for now
                 pass
 
-            #if not rlayer.isValid():
+            # if not rlayer.isValid():
             #    QMessageBox.information(None, "Test", "Layer failed to load")
 
             self.iface.messageBar().pushMessage(
@@ -435,4 +436,3 @@ class getMedianFunctions:
 ######################################################
 ######################################################
 ######################################################
-
