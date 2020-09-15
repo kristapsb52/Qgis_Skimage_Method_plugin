@@ -381,35 +381,25 @@ class getMedianFunctions:
             # If image is included
             if (isImageIncluded):
                 # Convert the image to a 2d array
-                #im_r = im[:,:,0]
-                #im_g = im[:,:,1]
-                #im_b = im[:,:,2]
+                if(self.dlg.AvailableFunctionsBox.currentText() == "slic"):
+                    dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+                    resultArray = self.method_function_call(im)
 
-                # Pass the image to the function
-                # The function then calls the method with a 2D array of numpy as one of its arguments
-                #resultArray = self.method_function_call(im)
+                    dataset.GetRasterBand(1).WriteArray(resultArray)
 
-                resultArray = self.method_function_call(im)
-                #resultArray_g = self.method_function_call(im_g)
-                #resultArray_b = self.method_function_call(im_b)
-                #QMessageBox.information(None, "Test", str(resultArray))
+                if(self.dlg.AvailableFunctionsBox.currentText() == "median"):
+                    dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                    im_r = im[:,:,0]
+                    im_g = im[:,:,1]
+                    im_b = im[:,:,2]
 
-                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                    resultArray_r = self.method_function_call(im_r)
+                    resultArray_g = self.method_function_call(im_g)
+                    resultArray_b = self.method_function_call(im_b)
 
-                ## Check how many dimensions the result array has
-                # If result array has two dimensions do....
-                #if( resultArray.ndim == 2):
-                    #QMessageBox.information(None, "Test", str(resultArray.shape))
-                    #dataset.GetRasterBand(1).WriteArray(resultArray)
-
-                # If result array has three dimensions do....
-                #elif( resultArray.ndim == 3):
-                #r_pixels = resultArray[:,:,0]
-                #g_pixels = resultArray[:,:,1]
-                #b_pixels = resultArray[:,:,2]
-                dataset.GetRasterBand(2).WriteArray(resultArray)
-                #dataset.GetRasterBand(2).WriteArray(resultArray[:,:,1])
-                #dataset.GetRasterBand(3).WriteArray(resultArray[:,:,2])
+                    dataset.GetRasterBand(1).WriteArray(resultArray_r)
+                    dataset.GetRasterBand(2).WriteArray(resultArray_g)
+                    dataset.GetRasterBand(3).WriteArray(resultArray_b)
 
                 geotrans = gdalIm.GetGeoTransform()
                 proj = gdalIm.GetProjection()
