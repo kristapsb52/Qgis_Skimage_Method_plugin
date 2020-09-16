@@ -371,6 +371,8 @@ class getMedianFunctions:
 
         # See if OK was pressed
         if result:
+
+            # Change path of the files so the newly created ones can be used as well
             im = imread("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
             gdalIm = gdal.Open("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
 
@@ -387,6 +389,7 @@ class getMedianFunctions:
             isImageIncluded = re.search("image", methodArguments)
 
             # If image is included
+            ## TODO Make it so its possible to pass a grayscale image
             if (isImageIncluded):
                 # Convert the image to a 2d array
                 if (self.dlg.AvailableFunctionsBox.currentText() == "slic"):
@@ -403,6 +406,7 @@ class getMedianFunctions:
                         self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
                         self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
                         self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu"):
+
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
                     resultArray_r = self.method_function_call(im[:, :, 0])
@@ -431,8 +435,3 @@ class getMedianFunctions:
                 "Success", "Output file written at " + file_name,
                 level=Qgis.Success, duration=3
             )
-
-######################################################
-######################################################
-######################################################
-######################################################
