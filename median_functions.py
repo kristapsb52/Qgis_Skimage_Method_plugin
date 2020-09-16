@@ -287,6 +287,8 @@ class getMedianFunctions:
             return my_threshold_local(imageArgument, parameterList)
         elif (methodCalled == "threshold_otsu"):
             return my_threshold_local(imageArgument, parameterList)
+        elif (methodCalled == "unsharp_mask"):
+            return my_unsharp_mask(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -405,7 +407,8 @@ class getMedianFunctions:
                         self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
                         self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
                         self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
-                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu"):
+                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
+                        self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask"):
 
                     dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 

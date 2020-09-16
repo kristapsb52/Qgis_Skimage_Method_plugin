@@ -243,3 +243,25 @@ def my_threshold_otsu(image_value, parameter_string):
     return result
 
 # Calls unsharp_mask method
+def my_unsharp_mask(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = [["radius", 1.0], ["amount", 1.0], ["multichannel", False], ["preserve_range", False]]
+
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    parameter_names_string = ""
+    parameter_names_string = parameter_names_string.join(parameter_names)
+
+    param_radius = included_parameters[0][1]
+    param_amount = included_parameters[1][1]
+
+    if (parameter_names_string.find("radius") != -1):
+        param_radius = float(included_parameters[0][1])
+    if (parameter_names_string.find("amount") != -1):
+        param_amount = float(included_parameters[1][1])
+
+    result = filters.unsharp_mask(image=image_value, radius=param_radius, amount=param_amount,
+                                  multichannel=included_parameters[2][1], preserve_range=included_parameters[3][1])
+
+    return result * 100
