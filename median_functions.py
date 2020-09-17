@@ -236,32 +236,54 @@ class getMedianFunctions:
 
         self.dlg.AvailableFunctionsBox.addItems(allmethods)
 
+    def update_info_box(self):
+        self.dlg.InfoBox.clear()
+        chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
+        if (self.dlg.ModuleBox.currentIndex() == 0):
+            method_doc = inspect.getdoc(getattr(filters, chosenMethod))
+        elif (self.dlg.ModuleBox.currentIndex() == 1):
+            method_doc = inspect.getdoc(getattr(morphology, chosenMethod))
+        elif (self.dlg.ModuleBox.currentIndex() == 2):
+            method_doc = inspect.getdoc(getattr(segmentation, chosenMethod))
+
+        parameter_line = False
+        for line in method_doc.splitlines():
+            if (line == "Parameters"):
+                parameter_line = True
+            if (line == "Returns"):
+                parameter_line = False
+            if (parameter_line):
+                self.dlg.InfoBox.addItem(line)
+
+
+
     def get_arguments_for_method(self):
         # Gets the chosen method
         chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
-
         try:
-            methodParameters = inspect.getfullargspec(getattr(filters, chosenMethod))
+            method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
         except TypeError:
             self.dlg.Parameters.setText("No arguments for chosen function")
         except:
             if (self.dlg.ModuleBox.currentIndex() == 0):
-                methodParameters = inspect.getfullargspec(getattr(filters, chosenMethod))
+                method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 1):
-                methodParameters = inspect.getfullargspec(getattr(morphology, chosenMethod))
+                method_info = inspect.getfullargspec(getattr(morphology, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 2):
-                methodParameters = inspect.getfullargspec(getattr(segmentation, chosenMethod))
+                method_info = inspect.getfullargspec(getattr(segmentation, chosenMethod))
         # Gets the parameters for method
-        methodArguments = methodParameters.args
 
-        # Sets arguments to String
-        methodArgumentsString = "= , "
-        return methodArgumentsString.join(methodArguments) + "= "
+        return method_info
+    def get_default_values_for_method(self):
+
 
     # Updates the parameters for the chosen method
     def update_parameters(self):
-        methodArgumentsString = self.get_arguments_for_method()
+        method_info = self.get_arguments_for_method()
+        methodArguments = method_info.args
         # Prints out the parameters in the LineEdit window
+        methodArgumentsString = "= , "
+        methodArgumentsString.join(methodArguments) + "= "
         self.dlg.Parameters.setText(methodArgumentsString)
 
     def select_output_file(self):
@@ -269,7 +291,6 @@ class getMedianFunctions:
             self.dlg, "Select output file ", "", "*.tif")
         self.dlg.OutputFile.setText(filename)
 
-    # It is assumed that the biggest argument count for a method is 7
     def method_function_call_helper(self, methodCalled, parameterList, imageArgument):
         if (methodCalled == "median"):
             return my_median(imageArgument, parameterList)
@@ -324,7 +345,6 @@ class getMedianFunctions:
         elif (self.dlg.ModuleBox.currentIndex() == 2):
             functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
 
-        # Should return a numpy array of 2D or 3D
         return functionToCall
 
     def get_save_file_name(self):
@@ -350,6 +370,7 @@ class getMedianFunctions:
             self.dlg.ModuleBox.currentIndexChanged.connect(self.update_function_list)
             self.dlg.pushButton.clicked.connect(self.select_output_file)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_parameters)
+            self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_info_box)
 
         # Fetch the currently loaded layers
         layers = QgsProject.instance().layerTreeRoot().children()
@@ -374,7 +395,8 @@ class getMedianFunctions:
         # See if OK was pressed
         if result:
 
-            # Change path of the files so the newly created ones can be used as well
+            # TODO Change path of the files so the newly created ones can be used as well
+
             im = imread("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
             gdalIm = gdal.Open("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
 
@@ -392,44 +414,46 @@ class getMedianFunctions:
 
             # If image is included
             ## TODO Make it so its possible to pass a grayscale image
-            if (isImageIncluded):
+            #if (isImageIncluded):
                 # Convert the image to a 2d array
-                if (self.dlg.AvailableFunctionsBox.currentText() == "slic"):
-                    dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+            if (self.dlg.AvailableFunctionsBox.currentText() == "slic"):
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
-                    resultArray = self.method_function_call(im)
+                resultArray = self.method_function_call(im)
 
-                    dataset.GetRasterBand(1).WriteArray(resultArray)
+                dataset.GetRasterBand(1).WriteArray(resultArray)
 
-                if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
-                        self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
-                        self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask"):
+            if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
+                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
 
-                    dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
-                    resultArray_r = self.method_function_call(im[:, :, 0])
-                    resultArray_g = self.method_function_call(im[:, :, 1])
-                    resultArray_b = self.method_function_call(im[:, :, 2])
+                resultArray_r = self.method_function_call(im[:, :, 0])
+                resultArray_g = self.method_function_call(im[:, :, 1])
+                resultArray_b = self.method_function_call(im[:, :, 2])
 
-                    dataset.GetRasterBand(1).WriteArray(resultArray_r)
-                    dataset.GetRasterBand(2).WriteArray(resultArray_g)
-                    dataset.GetRasterBand(3).WriteArray(resultArray_b)
+                dataset.GetRasterBand(1).WriteArray(resultArray_r)
+                dataset.GetRasterBand(2).WriteArray(resultArray_g)
+                dataset.GetRasterBand(3).WriteArray(resultArray_b)
 
-                geotrans = gdalIm.GetGeoTransform()
-                proj = gdalIm.GetProjection()
-                dataset.SetGeoTransform(geotrans)
-                dataset.SetProjection(proj)
-                dataset.FlushCache()
+            geotrans = gdalIm.GetGeoTransform()
+            proj = gdalIm.GetProjection()
+            dataset.SetGeoTransform(geotrans)
+            dataset.SetProjection(proj)
+            dataset.FlushCache()
 
             # If image isn't included
-            else:
+            #else:
                 # Do nothing for now
-                pass
+                #pass
 
             # if not rlayer.isValid():
             #    QMessageBox.information(None, "Test", "Layer failed to load")

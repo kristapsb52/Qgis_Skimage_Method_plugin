@@ -3,6 +3,7 @@ from skimage.morphology import disk
 from qgis.PyQt.QtWidgets import QMessageBox
 import re
 import numpy as np
+import median_functions
 
 
 # Returns a list of parameter names
@@ -35,7 +36,23 @@ def get_list_of_values(parameter_string):
 
     return resultList
 
+def get_parameter_list():
+    method_info = median_functions.getMedianFunctions.get_arguments_for_method()
+    argument_names = method_info.args
+    default_values = method_info.defaults
+    arg_val_size_diff = len(argument_names) - len(default_values)
+    parameter_list = []
 
+    for x in range(len(argument_names)):
+        parameter_list.append([])
+        parameter_list[x].append(argument_names[x])
+
+    for x in range(len(default_values)):
+        parameter_list[x+arg_val_size_diff].append(default_values[x])
+
+    return parameter_list
+# TODO every function has the same logic, but the parameters are different, OPTIMIZE THE CODE
+# TODO check if user inputed the correct type for parameters, if not then throw a QGIS error box with info
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
     for i in range(len(parameter_names)):
         for j in range(len(included_parameters)):
@@ -48,11 +65,20 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
 
 ## Calls Segmentation functions
 # Calls clear_border method
-def my_clear_border():
-    pass
-    # result = segmentation.clear_border(labels= , buffer_size=, bgval= , in_place= , mask=)
+def my_clear_border(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = get_parameter_list()
 
-    # return result
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    param_buffer_size = int(included_parameters[0][1])
+
+    result = segmentation.clear_border(labels=image_value, buffer_size=param_buffer_size,
+                                       bgval=included_parameters[1][1], in_place=included_parameters[2][1],
+                                       mask= included_parameters[3][1])
+
+    return result
 
 
 # Calls find_boundaries method
@@ -64,21 +90,25 @@ def my_find_boundaries():
 
 
 # Calls quickshift method
-def my_quickshift():
-    pass
-    # result = segmentation.quickshift(image= , ratio= , kernel_size= , max_dist= , return_tree= , sigma= , convert2lab= , random_seed=)
+def my_quickshift(image_value, parameter_string):
+    parameter_names = get_list_of_names(parameter_string)
+    parameter_values = get_list_of_values(parameter_string)
+    included_parameters = get_parameter_list()
 
-    # return result
+    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+
+    result = segmentation.quickshift(image=image_value, ratio=included_parameters[0][1], kernel_size=included_parameters[1][1],
+                                     max_dist=included_parameters[2][1], return_tree=included_parameters[3][1], sigma=included_parameters[4][1],
+                                     convert2lab=included_parameters[5][1], random_seed=[6][1])
+
+    return result
 
 
 # Calls slic method
 def my_slic(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["n_segments", True], ["compactness", 10.], ["max_iter", 10], ["sigma", 0],
-                           ["spacing", None], ["multichannel", True], ["convert2lab", None],
-                           ["enforce_connectivity", True], ["min_size_factor", 0.5], ["max_size_factor", 3],
-                           ["slic_zero", False]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
     segments_string_to_int = int(included_parameters[0][1])
@@ -117,9 +147,7 @@ def my_slic(image_value, parameter_string):
 def my_gaussian(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["sigma", 1], ["output", None], ["mode", "nearest"],
-                           ["cval", 0], ["multichannel", None], ["preserve_range", False],
-                           ["truncate", 4.0]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
@@ -148,7 +176,7 @@ def my_gaussian(image_value, parameter_string):
 def my_laplace(image_value, parameter_string):
     parameter_values = get_list_of_values(parameter_string)
     parameter_names = get_list_of_names(parameter_string)
-    included_parameters = [["ksize", 3], ["mask", None]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
@@ -163,7 +191,7 @@ def my_laplace(image_value, parameter_string):
 def my_median(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["selem", True], ["out", True], ["mode", True], ["cval", True], ["behavior", True]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
@@ -181,7 +209,7 @@ def my_median(image_value, parameter_string):
 def my_sobel(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
+    included_parameters = get_parameter_list()
 
     ## mask is an array of bool
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
@@ -195,7 +223,7 @@ def my_sobel(image_value, parameter_string):
 def my_sobel_h(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
+    included_parameters = get_parameter_list()
 
     ## mask is an array of bool
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
@@ -209,7 +237,7 @@ def my_sobel_h(image_value, parameter_string):
 def my_sobel_v(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["mask", None], ["axis", None], ["mode", "reflect"], ["cval", 0.0]]
+    included_parameters = get_parameter_list()
 
     ## mask is an array of bool
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
@@ -223,8 +251,7 @@ def my_sobel_v(image_value, parameter_string):
 def my_threshold_local(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["block_size", 15], ["method", "gaussian"], ["offset", 0],
-                           ["mode", "reflect"], ["param", None], ["cval", 0]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
     param_block_size = int(included_parameters[0][1])
@@ -246,7 +273,7 @@ def my_threshold_otsu(image_value, parameter_string):
 def my_unsharp_mask(image_value, parameter_string):
     parameter_names = get_list_of_names(parameter_string)
     parameter_values = get_list_of_values(parameter_string)
-    included_parameters = [["radius", 1.0], ["amount", 1.0], ["multichannel", False], ["preserve_range", False]]
+    included_parameters = get_parameter_list()
 
     included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
