@@ -4,7 +4,6 @@
     <list default="true" id="e68ff077-b44c-4d6d-ac52-c4eb4d256531" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/median_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/median_functions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/median_functions_dialog_base.ui" beforeDir="false" afterPath="$PROJECT_DIR$/median_functions_dialog_base.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/method_call.py" beforeDir="false" afterPath="$PROJECT_DIR$/method_call.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -73,9 +72,9 @@
       <screen x="0" y="0" width="1920" height="1160" />
     </state>
     <state x="59" y="335" width="1235" height="716" key="dock-window-1/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1599737552041" />
-    <state x="-1297" y="346" width="672" height="678" key="search.everywhere.popup" timestamp="1600320850989">
+    <state x="-1297" y="346" width="672" height="678" key="search.everywhere.popup" timestamp="1600344410350">
       <screen x="-1920" y="121" width="1920" height="1040" />
     </state>
-    <state x="-1297" y="346" width="672" height="678" key="search.everywhere.popup/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1600320850989" />
+    <state x="-1297" y="346" width="672" height="678" key="search.everywhere.popup/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1600344410350" />
   </component>
 </project>

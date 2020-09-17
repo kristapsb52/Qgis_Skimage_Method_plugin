@@ -210,7 +210,7 @@ class getMedianFunctions:
         method_file = open("C:/users/nils/desktop/kristaps/qgis_data/method_list.txt", "r")
 
         # Reads the chosen module
-        chosen_method = ""
+        chosen_method = "Filter"
         if (self.dlg.ModuleBox.currentIndex == 0):
             chosen_method = "Filter"
         elif (self.dlg.ModuleBox.currentIndex() == 1):
@@ -230,11 +230,13 @@ class getMedianFunctions:
                 methodFound = True
 
         method_file.close()
-
+        result_methods = []
         for x in range(len(allmethods)):
             allmethods[x] = allmethods[x].replace('\n', '')
+            if (allmethods[x] != chosen_method):
+                result_methods.append(allmethods[x])
 
-        self.dlg.AvailableFunctionsBox.addItems(allmethods)
+        self.dlg.AvailableFunctionsBox.addItems(result_methods)
 
     def update_info_box(self):
         self.dlg.InfoBox.clear()
@@ -274,8 +276,6 @@ class getMedianFunctions:
         # Gets the parameters for method
 
         return method_info
-    def get_default_values_for_method(self):
-
 
     # Updates the parameters for the chosen method
     def update_parameters(self):
@@ -283,8 +283,7 @@ class getMedianFunctions:
         methodArguments = method_info.args
         # Prints out the parameters in the LineEdit window
         methodArgumentsString = "= , "
-        methodArgumentsString.join(methodArguments) + "= "
-        self.dlg.Parameters.setText(methodArgumentsString)
+        self.dlg.Parameters.setText(methodArgumentsString.join(methodArguments) + "= ")
 
     def select_output_file(self):
         filename, _filter = QFileDialog.getSaveFileName(
@@ -329,23 +328,20 @@ class getMedianFunctions:
     # Does stuff with the image
     def method_function_call(self, imageArgument):
         methodChosen = self.dlg.AvailableFunctionsBox.currentText()
+
         # Takes the user parameters
-        parameterList = self.dlg.Parameters.text()
+        parameterString = self.dlg.Parameters.text()
 
-        # Finds which method to use
-        # Module is filters
-        if (self.dlg.ModuleBox.currentIndex() == 0):
-            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
+        # Gets the list of methods parameter names and their default values
+        parameter_list = self.get_parameter_list()
+        parameter_names = get_list_of_names(parameterString)
+        parameter_values = get_list_of_values(parameterString)
+        QMessageBox.information(None, "Test", str(parameter_list))
+        parameter_list = set_parameter_values(parameter_list, parameter_names, parameter_values)
 
-        # Module is morphology
-        elif (self.dlg.ModuleBox.currentIndex() == 1):
-            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
 
-        # Module is segmentation
-        elif (self.dlg.ModuleBox.currentIndex() == 2):
-            functionToCall = self.method_function_call_helper(methodChosen, parameterList, imageArgument)
+        return self.method_function_call_helper(methodChosen, parameter_list, imageArgument)
 
-        return functionToCall
 
     def get_save_file_name(self):
         saveString = self.dlg.OutputFile.text()
@@ -356,6 +352,22 @@ class getMedianFunctions:
                 file_name += fullFileName[i]
             elif (fullFileName[i] == '.'):
                 return file_name
+
+    def get_parameter_list(self):
+        method_info = self.get_arguments_for_method()
+        argument_names = method_info.args
+        default_values = method_info.defaults
+        arg_val_size_diff = len(argument_names) - len(default_values)
+        parameter_list = []
+
+        for x in range(len(argument_names)):
+            parameter_list.append([])
+            parameter_list[x].append(argument_names[x])
+
+        for x in range(len(default_values)):
+            parameter_list[x + arg_val_size_diff].append(default_values[x])
+
+        return parameter_list
 
     def run(self):
         """Run method that performs all the real work"""
@@ -409,8 +421,8 @@ class getMedianFunctions:
             # dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
             # Get the arguments for method to check if image is included
-            methodArguments = self.get_arguments_for_method()
-            isImageIncluded = re.search("image", methodArguments)
+            #methodArguments = self.get_arguments_for_method()
+            #isImageIncluded = re.search("image", methodArguments)
 
             # If image is included
             ## TODO Make it so its possible to pass a grayscale image

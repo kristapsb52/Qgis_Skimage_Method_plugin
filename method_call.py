@@ -3,7 +3,7 @@ from skimage.morphology import disk
 from qgis.PyQt.QtWidgets import QMessageBox
 import re
 import numpy as np
-import median_functions
+# TODO change the names of my... methods
 
 
 # Returns a list of parameter names
@@ -36,26 +36,12 @@ def get_list_of_values(parameter_string):
 
     return resultList
 
-def get_parameter_list():
-    method_info = median_functions.getMedianFunctions.get_arguments_for_method()
-    argument_names = method_info.args
-    default_values = method_info.defaults
-    arg_val_size_diff = len(argument_names) - len(default_values)
-    parameter_list = []
-
-    for x in range(len(argument_names)):
-        parameter_list.append([])
-        parameter_list[x].append(argument_names[x])
-
-    for x in range(len(default_values)):
-        parameter_list[x+arg_val_size_diff].append(default_values[x])
-
-    return parameter_list
 # TODO every function has the same logic, but the parameters are different, OPTIMIZE THE CODE
 # TODO check if user inputed the correct type for parameters, if not then throw a QGIS error box with info
+# TODO add a comment that it skips the check of an image parameter
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
-    for i in range(len(parameter_names)):
-        for j in range(len(included_parameters)):
+    for i in range(1, len(parameter_names)):
+        for j in range(1, len(included_parameters)):
             if (parameter_names[i] == included_parameters[j][0]):
                 included_parameters[j][1] = parameter_values[i]
                 break
@@ -65,18 +51,13 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
 
 ## Calls Segmentation functions
 # Calls clear_border method
-def my_clear_border(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_clear_border(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-
-    param_buffer_size = int(included_parameters[0][1])
+    param_buffer_size = int(parameter_list[0][1])
 
     result = segmentation.clear_border(labels=image_value, buffer_size=param_buffer_size,
-                                       bgval=included_parameters[1][1], in_place=included_parameters[2][1],
-                                       mask= included_parameters[3][1])
+                                       bgval=parameter_list[1][1], in_place=parameter_list[2][1],
+                                       mask= parameter_list[3][1])
 
     return result
 
@@ -90,205 +71,180 @@ def my_find_boundaries():
 
 
 # Calls quickshift method
-def my_quickshift(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_quickshift(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-
-    result = segmentation.quickshift(image=image_value, ratio=included_parameters[0][1], kernel_size=included_parameters[1][1],
-                                     max_dist=included_parameters[2][1], return_tree=included_parameters[3][1], sigma=included_parameters[4][1],
-                                     convert2lab=included_parameters[5][1], random_seed=[6][1])
+    result = segmentation.quickshift(image=image_value, ratio=parameter_list[0][1], kernel_size=parameter_list[1][1],
+                                     max_dist=parameter_list[2][1], return_tree=parameter_list[3][1], sigma=parameter_list[4][1],
+                                     convert2lab=parameter_list[5][1], random_seed=[6][1])
 
     return result
 
 
 # Calls slic method
-def my_slic(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_slic(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-    segments_string_to_int = int(included_parameters[0][1])
+    segments_string_to_int = int(parameter_list[0][1])
     parameter_names_string = ""
-    parameter_names_string = parameter_names_string.join(parameter_names)
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
     ## If the values were changed parse the values from included parameters string to int
-    param_compactness = included_parameters[1][1]
-    param_max_iter = included_parameters[2][1]
-    param_sigma = included_parameters[3][1]
-    param_min_size_factor = included_parameters[8][1]
-    param_max_size_factor = included_parameters[9][1]
+    param_compactness = parameter_list[1][1]
+    param_max_iter = parameter_list[2][1]
+    param_sigma = parameter_list[3][1]
+    param_min_size_factor = parameter_list[8][1]
+    param_max_size_factor = parameter_list[9][1]
 
     if (parameter_names_string.find("compactness") != -1):
-        param_compactness = float(included_parameters[1][1])
+        param_compactness = float(parameter_list[1][1])
     if (parameter_names_string.find("max_iter") != -1):
-        param_max_iter = int(included_parameters[2][1])
+        param_max_iter = int(parameter_list[2][1])
     if (parameter_names_string.find("sigma") != -1):
-        param_sigma = int(included_parameters[3][1])
+        param_sigma = int(parameter_list[3][1])
     if (parameter_names_string.find("min_size_factor") != -1):
-        param_min_size_factor = float(included_parameters[8][1])
+        param_min_size_factor = float(parameter_list[8][1])
     if (parameter_names_string.find("max_size_factor") != -1):
-        param_max_size_factor = int(included_parameters[9][1])
+        param_max_size_factor = int(parameter_list[9][1])
 
     result = segmentation.slic(image=image_value, n_segments=segments_string_to_int,
                                compactness=param_compactness, max_iter=param_max_iter,
-                               sigma=param_sigma, spacing=included_parameters[4][1],
-                               multichannel=included_parameters[5][1], convert2lab=included_parameters[6][1],
-                               enforce_connectivity=included_parameters[7][1], min_size_factor=param_min_size_factor,
-                               max_size_factor=param_max_size_factor, slic_zero=included_parameters[10][1])
+                               sigma=param_sigma, spacing=parameter_list[4][1],
+                               multichannel=parameter_list[5][1], convert2lab=parameter_list[6][1],
+                               enforce_connectivity=parameter_list[7][1], min_size_factor=param_min_size_factor,
+                               max_size_factor=param_max_size_factor, slic_zero=parameter_list[10][1])
 
     return result
 
 
 ## Calls Filters functions
 # Calls gaussian method
-def my_gaussian(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_gaussian(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
 
-    param_sigma = int(included_parameters[0][1])
-    param_cval = included_parameters[3][1]
-    param_truncate = included_parameters[6][1]
-    param_multichannel = included_parameters[4][1]
+
+    param_cval = parameter_list[4][1]
+    param_truncate = parameter_list[7][1]
+    param_multichannel = parameter_list[5][1]
 
     parameter_names_string = ""
-    parameter_names_string = parameter_names_string.join(parameter_names)
-    if (parameter_names_string.find("cval") != -1):
-        param_cval = int(included_parameters[3][1])
-    if (parameter_names_string.find("truncate") != -1):
-        param_truncate = float(included_parameters[6][1])
-    if (parameter_names_string.find("multichannel") != -1):
-        param_multichannel = bool(included_parameters[4][1])
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
 
-    result = filters.gaussian(image=image_value, sigma=param_sigma, output=included_parameters[1][1],
-                              mode=included_parameters[2][1], cval=param_cval, multichannel=param_multichannel,
-                              preserve_range=included_parameters[5][1], truncate=param_truncate)
+    try:
+        param_sigma = int(parameter_list[1][1])
+        if (parameter_names_string.find("cval") != -1):
+            param_cval = int(parameter_list[4][1])
+        if (parameter_names_string.find("truncate") != -1):
+            param_truncate = float(parameter_list[7][1])
+        if (parameter_names_string.find("multichannel") != -1):
+            param_multichannel = bool(parameter_list[5][1])
+
+        result = filters.gaussian(image=image_value, sigma=param_sigma, output=parameter_list[2][1],
+                                  mode=parameter_list[3][1], cval=param_cval, multichannel=param_multichannel,
+                                  preserve_range=parameter_list[6][1], truncate=param_truncate)
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result * 100
 
 
 # Calls laplace method
-def my_laplace(image_value, parameter_string):
-    parameter_values = get_list_of_values(parameter_string)
-    parameter_names = get_list_of_names(parameter_string)
-    included_parameters = get_parameter_list()
+def my_laplace(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+    try:
+        param_ksize = int(parameter_list[0][1])
 
-    param_ksize = int(included_parameters[0][1])
-
-    result = filters.laplace(image=image_value, ksize=param_ksize, mask=included_parameters[1][1])
+        result = filters.laplace(image=image_value, ksize=param_ksize, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result
 
 
 # Calls Median method
-def my_median(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_median(image_value, parameter_list):
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+    try:
+        cvalStringToInt = int(parameter_list[4][1])
+        selemStringToInt = int(parameter_list[1][1])
 
-    cvalStringToInt = int(included_parameters[3][1])
-    selemStringToInt = int(included_parameters[0][1])
-
-    result = filters.median(image=image_value, selem=disk(selemStringToInt), mode=included_parameters[2][1],
-                            cval=cvalStringToInt,
-                            behavior=included_parameters[4][1])
+        result = filters.median(image=image_value, selem=disk(selemStringToInt), mode=parameter_list[3][1],
+                                cval=cvalStringToInt,
+                                behavior=parameter_list[5][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result
 
 
 # Calls Sobel method
-def my_sobel(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
-
-    ## mask is an array of bool
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-
-    result = filters.sobel(image=image_value, mask=included_parameters[0][1])
+def my_sobel(image_value, parameter_list):
+    try:
+        result = filters.sobel(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result * 100
 
 
 # Calls Sobel_h method
-def my_sobel_h(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
-
-    ## mask is an array of bool
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-
-    result = filters.sobel_h(image=image_value, mask=included_parameters[0][1])
-
+def my_sobel_h(image_value, parameter_list):
+    try:
+        result = filters.sobel_h(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
     return result * 100
 
 
 # Calls Sobel_v method
-def my_sobel_v(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_sobel_v(image_value, parameter_list):
 
-    ## mask is an array of bool
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-
-    result = filters.sobel_h(image=image_value, mask=included_parameters[0][1])
+    try:
+        result = filters.sobel_h(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result * 100
 
 
 # Calls threshold_local method
-def my_threshold_local(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
+def my_threshold_local(image_value, parameter_list):
+    try:
+        param_block_size = int(parameter_list[1][1])
 
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
-    param_block_size = int(included_parameters[0][1])
-
-    result = image_value > filters.threshold_local(image=image_value, block_size=param_block_size, method=included_parameters[1][1],
-                                     offset=included_parameters[2][1], mode=included_parameters[3][1],
-                                     param=included_parameters[4][1],
-                                     cval=included_parameters[5][1])
+        result = image_value > filters.threshold_local(image=image_value, block_size=param_block_size, method=parameter_list[2][1],
+                                         offset=parameter_list[3][1], mode=parameter_list[4][1],
+                                         param=parameter_list[5][1],
+                                         cval=parameter_list[6][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result
 
 
 # Calls threshold_otsu method
-def my_threshold_otsu(image_value, parameter_string):
+def my_threshold_otsu(image_value, parameter_list):
     result = image_value <= filters.threshold_otsu(image_value)
     return result
 
 # Calls unsharp_mask method
-def my_unsharp_mask(image_value, parameter_string):
-    parameter_names = get_list_of_names(parameter_string)
-    parameter_values = get_list_of_values(parameter_string)
-    included_parameters = get_parameter_list()
-
-    included_parameters = set_parameter_values(included_parameters, parameter_names, parameter_values)
+def my_unsharp_mask(image_value, parameter_list):
 
     parameter_names_string = ""
-    parameter_names_string = parameter_names_string.join(parameter_names)
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
 
-    param_radius = included_parameters[0][1]
-    param_amount = included_parameters[1][1]
+    try:
+        param_radius = parameter_list[1][1]
+        param_amount = parameter_list[2][1]
 
-    if (parameter_names_string.find("radius") != -1):
-        param_radius = float(included_parameters[0][1])
-    if (parameter_names_string.find("amount") != -1):
-        param_amount = float(included_parameters[1][1])
+        if (parameter_names_string.find("radius") != -1):
+            param_radius = float(parameter_list[1][1])
+        if (parameter_names_string.find("amount") != -1):
+            param_amount = float(parameter_list[2][1])
 
-    result = filters.unsharp_mask(image=image_value, radius=param_radius, amount=param_amount,
-                                  multichannel=included_parameters[2][1], preserve_range=included_parameters[3][1])
+        result = filters.unsharp_mask(image=image_value, radius=param_radius, amount=param_amount,
+                                      multichannel=parameter_list[3][1], preserve_range=parameter_list[4][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result * 100
