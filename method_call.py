@@ -36,7 +36,6 @@ def get_list_of_values(parameter_string):
 
     return resultList
 
-# TODO every function has the same logic, but the parameters are different, OPTIMIZE THE CODE
 # TODO check if user inputed the correct type for parameters, if not then throw a QGIS error box with info
 # TODO add a comment that it skips the check of an image parameter
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
@@ -63,20 +62,55 @@ def my_clear_border(image_value, parameter_list):
 
 
 # Calls find_boundaries method
-def my_find_boundaries():
-    pass
-    # result = segmentation.find_boundaries(label_img= , connectivity=, mode= , background=)
+def my_find_boundaries(image_value, parameter_list):
 
-    # return result
+    # TODO make an array that is used for this method
+
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+
+    try:
+        if (parameter_names_string.find("connectivity") != -1):
+            parameter_list[1][1] = int(parameter_list[1][1])
+        if (parameter_names_string.find("background") != -1):
+            parameter_list[3][1] = int(parameter_list[3][1])
+        result = segmentation.find_boundaries(label_img=image_value, connectivity=parameter_list[1][1],
+                                          mode=parameter_list[2][1], background=parameter_list[3][1])
+
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+    return result
 
 
 # Calls quickshift method
 def my_quickshift(image_value, parameter_list):
 
-    result = segmentation.quickshift(image=image_value, ratio=parameter_list[0][1], kernel_size=parameter_list[1][1],
-                                     max_dist=parameter_list[2][1], return_tree=parameter_list[3][1], sigma=parameter_list[4][1],
-                                     convert2lab=parameter_list[5][1], random_seed=[6][1])
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
 
+    try:
+        if (parameter_names_string.find("ratio") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("kernel_size") != -1):
+            parameter_list[2][1] = int(parameter_list[2][1])
+        if (parameter_names_string.find("max_dist") != -1):
+            parameter_list[3][1] = int(parameter_list[3][1])
+        if (parameter_names_string.find("return_tree") != -1):
+            parameter_list[4][1] = bool(parameter_list[4][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[5][1] = int(parameter_list[5][1])
+        if (parameter_names_string.find("convert2lab") != -1):
+            parameter_list[6][1] = bool(parameter_list[6][1])
+        if (parameter_names_string.find("random_seed") != -1):
+            parameter_list[7][1] = int(parameter_list[7][1])
+
+        result = segmentation.quickshift(image=image_value, ratio=parameter_list[1][1], kernel_size=parameter_list[2][1],
+                                     max_dist=parameter_list[3][1], return_tree=parameter_list[4][1], sigma=parameter_list[5][1],
+                                     convert2lab=parameter_list[6][1], random_seed=parameter_list[7][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
     return result
 
 
@@ -88,29 +122,27 @@ def my_slic(image_value, parameter_list):
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
     ## If the values were changed parse the values from included parameters string to int
-    param_compactness = parameter_list[1][1]
-    param_max_iter = parameter_list[2][1]
-    param_sigma = parameter_list[3][1]
-    param_min_size_factor = parameter_list[8][1]
-    param_max_size_factor = parameter_list[9][1]
 
-    if (parameter_names_string.find("compactness") != -1):
-        param_compactness = float(parameter_list[1][1])
-    if (parameter_names_string.find("max_iter") != -1):
-        param_max_iter = int(parameter_list[2][1])
-    if (parameter_names_string.find("sigma") != -1):
-        param_sigma = int(parameter_list[3][1])
-    if (parameter_names_string.find("min_size_factor") != -1):
-        param_min_size_factor = float(parameter_list[8][1])
-    if (parameter_names_string.find("max_size_factor") != -1):
-        param_max_size_factor = int(parameter_list[9][1])
+    try:
+        if (parameter_names_string.find("compactness") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("max_iter") != -1):
+            parameter_list[2][1] = int(parameter_list[2][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[3][1] = int(parameter_list[3][1])
+        if (parameter_names_string.find("min_size_factor") != -1):
+            parameter_list[8][1] = float(parameter_list[8][1])
+        if (parameter_names_string.find("max_size_factor") != -1):
+            parameter_list[9][1] = int(parameter_list[9][1])
 
-    result = segmentation.slic(image=image_value, n_segments=segments_string_to_int,
-                               compactness=param_compactness, max_iter=param_max_iter,
-                               sigma=param_sigma, spacing=parameter_list[4][1],
-                               multichannel=parameter_list[5][1], convert2lab=parameter_list[6][1],
-                               enforce_connectivity=parameter_list[7][1], min_size_factor=param_min_size_factor,
-                               max_size_factor=param_max_size_factor, slic_zero=parameter_list[10][1])
+        result = segmentation.slic(image=image_value, n_segments=segments_string_to_int,
+                                   compactness=parameter_list[1][1], max_iter=parameter_list[2][1],
+                                   sigma=parameter_list[3][1], spacing=parameter_list[4][1],
+                                   multichannel=parameter_list[5][1], convert2lab=parameter_list[6][1],
+                                   enforce_connectivity=parameter_list[7][1], min_size_factor=parameter_list[8][1],
+                                   max_size_factor=parameter_list[9][1], slic_zero=parameter_list[10][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result
 
@@ -208,8 +240,19 @@ def my_sobel_v(image_value, parameter_list):
 
 # Calls threshold_local method
 def my_threshold_local(image_value, parameter_list):
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+
     try:
         param_block_size = int(parameter_list[1][1])
+
+        if(parameter_names_string.find("offset") != -1):
+            parameter_list[3][1] = float(parameter_list[3][1])
+        if(parameter_names_string.find("param") != -1):
+            parameter_list[5][1] = int(parameter_list[5][1])
+        if(parameter_names_string.find("cval") != -1):
+            parameter_list[6][1] = float(parameter_list[6][1])
 
         result = image_value > filters.threshold_local(image=image_value, block_size=param_block_size, method=parameter_list[2][1],
                                          offset=parameter_list[3][1], mode=parameter_list[4][1],

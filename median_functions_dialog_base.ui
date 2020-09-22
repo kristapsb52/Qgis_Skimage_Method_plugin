@@ -118,7 +118,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Available functions</string>
+    <string>Available methods</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">

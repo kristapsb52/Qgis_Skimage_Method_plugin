@@ -39,11 +39,8 @@ from .resources import *
 
 # Import the code for the dialog
 from .median_functions_dialog import getMedianFunctionsDialog
-
-import numpy as np
 import os.path
 import inspect
-import re
 import gdal
 from .method_call import *
 
@@ -309,6 +306,10 @@ class getMedianFunctions:
             return my_threshold_local(imageArgument, parameterList)
         elif (methodCalled == "unsharp_mask"):
             return my_unsharp_mask(imageArgument, parameterList)
+        elif (methodCalled == "quickshift"):
+            return my_quickshift(imageArgument, parameterList)
+        elif (methodCalled == "find_boundaries"):
+            return my_find_boundaries(imageArgument, parameterList)
 
     def get_list_from_user_parameters(self):
         stringList = []
@@ -336,7 +337,6 @@ class getMedianFunctions:
         parameter_list = self.get_parameter_list()
         parameter_names = get_list_of_names(parameterString)
         parameter_values = get_list_of_values(parameterString)
-        QMessageBox.information(None, "Test", str(parameter_list))
         parameter_list = set_parameter_values(parameter_list, parameter_names, parameter_values)
 
 
@@ -407,15 +407,15 @@ class getMedianFunctions:
         # See if OK was pressed
         if result:
 
-            # TODO Change path of the files so the newly created ones can be used as well
+            # TODO reads the path of the chosen layer
+            #im = imread("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
+            #gdalIm = gdal.Open("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
 
-            im = imread("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
-            gdalIm = gdal.Open("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
 
             # The path where the user wants to save the image
             file_name = self.dlg.OutputFile.text()
-            x_pixels = im.shape[0]
-            y_pixels = im.shape[1]
+            x_pixels = im.shape[1]
+            y_pixels = im.shape[0]
 
             driver = gdal.GetDriverByName('GTiff')
             # dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
@@ -428,11 +428,11 @@ class getMedianFunctions:
             ## TODO Make it so its possible to pass a grayscale image
             #if (isImageIncluded):
                 # Convert the image to a 2d array
-            if (self.dlg.AvailableFunctionsBox.currentText() == "slic"):
+            if (self.dlg.AvailableFunctionsBox.currentText() == "slic" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
                 resultArray = self.method_function_call(im)
-
                 dataset.GetRasterBand(1).WriteArray(resultArray)
 
             if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
@@ -444,7 +444,7 @@ class getMedianFunctions:
                     self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
                     self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
                     self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries"):
 
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
