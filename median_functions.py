@@ -311,21 +311,6 @@ class getMedianFunctions:
         elif (methodCalled == "find_boundaries"):
             return my_find_boundaries(imageArgument, parameterList)
 
-    def get_list_from_user_parameters(self):
-        stringList = []
-
-        parameterString = str(self.dlg.Parameters.text())
-        tempArgument = ""
-        for x in range(len(parameterString)):
-            if (parameterString[x] != ','):
-                tempArgument += parameterString[x]
-            elif (parameterString[x] == ',' or x == len(parameterString) - 1):
-                stringList.append(tempArgument)
-                tempArgument = ""
-                x += 1
-
-        return stringList
-
     # Does stuff with the image
     def method_function_call(self, imageArgument):
         methodChosen = self.dlg.AvailableFunctionsBox.currentText()
@@ -369,6 +354,20 @@ class getMedianFunctions:
 
         return parameter_list
 
+    def change_label_text(self):
+        file_name = self.dlg.RasterLayerBox.currentText()
+        file_path = self.dlg.OutputFile.text()
+        (myDirectory, nameFile) = os.path.split(file_path)
+        try:
+            image1 = imread(myDirectory + "\\" + file_name + ".tif")
+            self.dlg.tip_label.setText("Path is correct")
+        except:
+            self.dlg.tip_label.setText("The path isn't in the same dir as chosen file")
+
+
+        #self.dlg.tip_label.setText("Changed")
+
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -383,6 +382,7 @@ class getMedianFunctions:
             self.dlg.pushButton.clicked.connect(self.select_output_file)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_parameters)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_info_box)
+            self.dlg.pushButton.clicked.connect(self.change_label_text)
 
         # Fetch the currently loaded layers
         layers = QgsProject.instance().layerTreeRoot().children()
@@ -406,14 +406,16 @@ class getMedianFunctions:
 
         # See if OK was pressed
         if result:
+            file_name = self.dlg.OutputFile.text()
+            (myDirectory, nameFile) = os.path.split(file_name)
 
-            # TODO reads the path of the chosen layer
-            #im = imread("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
-            #gdalIm = gdal.Open("C:/users/nils/Downloads/" + self.dlg.RasterLayerBox.currentText() + ".tif")
+
+            im = imread(myDirectory + "\\" + self.dlg.RasterLayerBox.currentText() + ".tif")
+            gdalIm = gdal.Open(myDirectory + "\\" + self.dlg.RasterLayerBox.currentText() + ".tif")
 
 
             # The path where the user wants to save the image
-            file_name = self.dlg.OutputFile.text()
+
             x_pixels = im.shape[1]
             y_pixels = im.shape[0]
 

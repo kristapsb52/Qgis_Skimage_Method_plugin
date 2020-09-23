@@ -36,8 +36,8 @@ def get_list_of_values(parameter_string):
 
     return resultList
 
-# TODO check if user inputed the correct type for parameters, if not then throw a QGIS error box with info
-# TODO add a comment that it skips the check of an image parameter
+# The method skips the first element since its not an actual value. The image is read from a path
+# which is then passed as a value
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
     for i in range(1, len(parameter_names)):
         for j in range(1, len(included_parameters)):

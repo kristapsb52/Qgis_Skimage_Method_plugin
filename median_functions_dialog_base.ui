@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>370</y>
+     <y>390</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -178,6 +178,19 @@
    </property>
    <property name="text">
     <string>Methods info box</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="tip_label">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>360</y>
+     <width>241</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Path has to be the same as chosen image</string>
    </property>
   </widget>
  </widget>
