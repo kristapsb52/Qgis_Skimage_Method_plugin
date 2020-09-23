@@ -32,5 +32,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .median_functions import getMedianFunctions
-    return getMedianFunctions(iface)
+    from .Qgis_skimage_method_plugin import QgisSkimageMethods
+    return QgisSkimageMethods(iface)

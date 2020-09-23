@@ -190,7 +190,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Path has to be the same as chosen image</string>
+    <string>Path has to be the same as chosen Raster layer</string>
    </property>
   </widget>
  </widget>

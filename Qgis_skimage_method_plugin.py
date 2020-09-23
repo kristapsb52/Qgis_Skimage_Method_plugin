@@ -32,14 +32,15 @@ from skimage.io import imread
 # Initialize Qt resources from file resources.py
 
 # Import the code for the dialog
-from .median_functions_dialog import getMedianFunctionsDialog
+from .Qgis_skimage_method_plugin_dialog import getMedianFunctionsDialog
 import os.path
 import inspect
 import gdal
 from .method_call import *
 
-
-class getMedianFunctions:
+# TODO There is no icon for the plugin
+# TODO Plugin can't find file path
+class QgisSkimageMethods:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -59,7 +60,7 @@ class getMedianFunctions:
         locale_path = os.path.join(
             self.plugin_dir,
             'i18n',
-            'getMedianFunctions_{}.qm'.format(locale))
+            'QgisSkimageMethod{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
@@ -68,7 +69,7 @@ class getMedianFunctions:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&get Median Functions')
+        self.menu = self.tr(u'&Qgis Skimage Method')
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -87,7 +88,7 @@ class getMedianFunctions:
         :rtype: QString
         """
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
-        return QCoreApplication.translate('getMedianFunctions', message)
+        return QCoreApplication.translate('Qgis Skimage Method', message)
 
     def add_action(
             self,
@@ -183,7 +184,7 @@ class getMedianFunctions:
 
         for action in self.actions:
             self.iface.removePluginVectorMenu(
-                self.tr(u'&get Median Functions'),
+                self.tr(u'&Qgis Skimage Method'),
                 action)
             self.iface.removeToolBarIcon(action)
 
@@ -197,8 +198,10 @@ class getMedianFunctions:
     # Updates the method list for the chosen module
     def update_function_list(self):
         self.dlg.AvailableFunctionsBox.clear()
+
         # Reads file that has all the methods
-        method_file = open("C:/users/nils/desktop/kristaps/qgis_data/method_list.txt", "r")
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        method_file = open(dir_path + "\method_list.txt", "r")
 
         # Reads the chosen module
         chosen_method = "Filter"

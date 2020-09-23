@@ -1,0 +1,14 @@
+Segmentation
+quickshift
+slic
+
+Filter
+gaussian
+laplace
+median
+sobel
+sobel_v
+sobel_h
+threshold_local
+threshold_otsu
+unsharp_mask
