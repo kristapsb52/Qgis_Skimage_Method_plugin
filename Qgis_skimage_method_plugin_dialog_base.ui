@@ -193,6 +193,19 @@
     <string>Path has to be the same as chosen Raster layer</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="UserManualButton">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>10</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>User Manual</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>

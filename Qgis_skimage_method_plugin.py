@@ -23,9 +23,10 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
+from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox, QDialog, QPushButton
 from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer
 from qgis.utils import iface
+from qgis.gui import QgsDialog
 
 
 from skimage.io import imread
@@ -33,6 +34,7 @@ from skimage.io import imread
 
 # Import the code for the dialog
 from .Qgis_skimage_method_plugin_dialog import getMedianFunctionsDialog
+from .Qgis_skimage_method_usermanual_dialog import userManualDialog
 import os.path
 import inspect
 import gdal
@@ -361,9 +363,20 @@ class QgisSkimageMethods:
         except:
             self.dlg.tip_label.setText("The path isn't in the same dir as chosen file")
 
+    def user_manual_window(self):
+        self.user_manual.show()
+        # Reads user manual txt and outputs all the information to user info
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        user_manual_info = open(dir_path + "\manual.txt", "r")
 
-        #self.dlg.tip_label.setText("Changed")
+        for line in user_manual_info:
+            self.user_manual.userInfo.addItem(line)
 
+        self.user_manual.closeButton.clicked.connect(self.close_user_manual)
+
+
+    def close_user_manual(self):
+        self.user_manual.close()
 
     def run(self):
         """Run method that performs all the real work"""
@@ -375,11 +388,14 @@ class QgisSkimageMethods:
         if self.first_start == True:
             self.first_start = False
             self.dlg = getMedianFunctionsDialog()
+            self.user_manual = userManualDialog()
+
             self.dlg.ModuleBox.currentIndexChanged.connect(self.update_function_list)
             self.dlg.pushButton.clicked.connect(self.select_output_file)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_parameters)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_info_box)
             self.dlg.pushButton.clicked.connect(self.change_label_text)
+            self.dlg.UserManualButton.clicked.connect(self.user_manual_window)
 
         # Fetch the currently loaded layers
         layers = QgsProject.instance().layerTreeRoot().children()
