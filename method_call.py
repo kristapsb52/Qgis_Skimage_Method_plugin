@@ -2,7 +2,6 @@ from skimage import filters, morphology, segmentation
 from skimage.morphology import disk
 from qgis.PyQt.QtWidgets import QMessageBox
 import re
-import numpy as np
 # TODO change the names of my... methods
 
 

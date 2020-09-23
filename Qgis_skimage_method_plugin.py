@@ -26,16 +26,10 @@ from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox
 from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer
 from qgis.utils import iface
-from qgis.gui import QgisInterface
 
-# Skimage imports
-from skimage import morphology
-from skimage import segmentation
-from skimage import filters
+
 from skimage.io import imread
-from skimage.morphology import disk
 # Initialize Qt resources from file resources.py
-from .resources import *
 
 # Import the code for the dialog
 from .median_functions_dialog import getMedianFunctionsDialog
