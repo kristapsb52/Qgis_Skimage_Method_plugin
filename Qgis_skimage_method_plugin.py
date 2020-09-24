@@ -168,8 +168,8 @@ class QgisSkimageMethods:
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        icon_path = ':/plugins/median_functions/icon.png'
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        icon_path = dir_path + "/icon.png"
         self.add_action(
             icon_path,
             text=self.tr(u'get Module Functions'),
@@ -353,16 +353,6 @@ class QgisSkimageMethods:
 
         return parameter_list
 
-    def change_label_text(self):
-        file_name = self.dlg.RasterLayerBox.currentText()
-        file_path = self.dlg.OutputFile.text()
-        (myDirectory, nameFile) = os.path.split(file_path)
-        try:
-            image1 = imread(myDirectory + "\\" + file_name + ".tif")
-            self.dlg.tip_label.setText("Path is correct")
-        except:
-            self.dlg.tip_label.setText("The path isn't in the same dir as chosen file")
-
     def user_manual_window(self):
         self.user_manual.show()
         # Reads user manual txt and outputs all the information to user info
@@ -394,7 +384,6 @@ class QgisSkimageMethods:
             self.dlg.pushButton.clicked.connect(self.select_output_file)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_parameters)
             self.dlg.AvailableFunctionsBox.currentIndexChanged.connect(self.update_info_box)
-            self.dlg.pushButton.clicked.connect(self.change_label_text)
             self.dlg.UserManualButton.clicked.connect(self.user_manual_window)
 
         # Fetch the currently loaded layers
@@ -420,11 +409,12 @@ class QgisSkimageMethods:
         # See if OK was pressed
         if result:
             file_name = self.dlg.OutputFile.text()
-            (myDirectory, nameFile) = os.path.split(file_name)
 
-
-            im = imread(myDirectory + "\\" + self.dlg.RasterLayerBox.currentText() + ".tif")
-            gdalIm = gdal.Open(myDirectory + "\\" + self.dlg.RasterLayerBox.currentText() + ".tif")
+            # Reads the path of the chosen Raster layer/Image
+            layers = QgsProject.instance().mapLayersByName(self.dlg.RasterLayerBox.currentText())
+            layer_path = layers[0].dataProvider().dataSourceUri()
+            im = imread(layer_path)
+            gdalIm = gdal.Open(layer_path)
 
 
             # The path where the user wants to save the image

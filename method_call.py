@@ -115,31 +115,33 @@ def my_quickshift(image_value, parameter_list):
 
 # Calls slic method
 def my_slic(image_value, parameter_list):
-
-    segments_string_to_int = int(parameter_list[0][1])
     parameter_names_string = ""
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
+
     ## If the values were changed parse the values from included parameters string to int
-
     try:
+        if (parameter_names_string.find("n_segments") != -1):
+            parameter_list[1][1] = int(parameter_list[1][1])
         if (parameter_names_string.find("compactness") != -1):
-            parameter_list[1][1] = float(parameter_list[1][1])
+            parameter_list[2][1] = float(parameter_list[2][1])
         if (parameter_names_string.find("max_iter") != -1):
-            parameter_list[2][1] = int(parameter_list[2][1])
-        if (parameter_names_string.find("sigma") != -1):
             parameter_list[3][1] = int(parameter_list[3][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[4][1] = int(parameter_list[4][1])
         if (parameter_names_string.find("min_size_factor") != -1):
-            parameter_list[8][1] = float(parameter_list[8][1])
+            parameter_list[9][1] = float(parameter_list[9][1])
         if (parameter_names_string.find("max_size_factor") != -1):
-            parameter_list[9][1] = int(parameter_list[9][1])
+            parameter_list[10][1] = int(parameter_list[10][1])
 
-        result = segmentation.slic(image=image_value, n_segments=segments_string_to_int,
-                                   compactness=parameter_list[1][1], max_iter=parameter_list[2][1],
-                                   sigma=parameter_list[3][1], spacing=parameter_list[4][1],
-                                   multichannel=parameter_list[5][1], convert2lab=parameter_list[6][1],
-                                   enforce_connectivity=parameter_list[7][1], min_size_factor=parameter_list[8][1],
-                                   max_size_factor=parameter_list[9][1], slic_zero=parameter_list[10][1])
+        QMessageBox.information(None, "Test", str(parameter_list))
+
+        result = segmentation.slic(image=image_value, n_segments=parameter_list[1][1],
+                                   compactness=parameter_list[2][1], max_iter=parameter_list[3][1],
+                                   sigma=parameter_list[4][1], spacing=parameter_list[5][1],
+                                   multichannel=parameter_list[6][1], convert2lab=parameter_list[7][1],
+                                   enforce_connectivity=parameter_list[8][1], min_size_factor=parameter_list[9][1],
+                                   max_size_factor=parameter_list[10][1], slic_zero=parameter_list[11][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 

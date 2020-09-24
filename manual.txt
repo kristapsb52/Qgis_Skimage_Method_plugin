@@ -1,18 +1,28 @@
-This
-is
-just
-a
-random
-text
-file
-to
-test
-if
-the
-method
-for 
-user
-manual
-will
-work 
-out
+-- This is a user manual, here to help you understand how the plugin works --
+
+In this plugin there are 5 necessary values that you have to describe:
+-> The first one is Raster layer. As the name says you have to choose
+which of the Raster Layers you would like to process
+
+-> After you have chosen your raster layer, you have to choose a module,
+either you want to segment or filter your image.
+
+-> After you've chosen your module, the plugin will show the available
+method to process your Raster Layer
+
+-> Based on the chosen method, the plugin will show a list of parameters
+in the text field which you can edit. To change the parameters default value
+you have to keep the parameters name and after the '=' add your desired
+value (I.e. "sigma=10"). Keep in mind that the text box on the right says
+what kind of data types the method supports for each parameter.
+"Comment something about if you can leave the data types empty, I.e. cval= "
+
+-> After you have decided what kind of parameters to use to process
+your Raster Layer, click on the 3 dots and select where you wish to
+save your processed image.
+
+If every data type was correct when clicking OK the plugin will start to
+process your image, if a data type was incorrect then the plugin should
+show an error message.
+
+Thank you for using this plugin!
