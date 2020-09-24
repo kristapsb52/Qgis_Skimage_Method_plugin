@@ -18,6 +18,10 @@ To upload the plugin to QGIS:
 * After it has been downloaded, in QGIS go to Plugins -> Manage and Install Plugins... ->
 go to Installed and mark the checkbox for "get Median Functions"
 * After all these steps have been done, reload QGIS and enjoy the plugin!
+--* If the plugin wasn't installed then try adding it as zip, to do that follow these instructions:
+--* Download the plugin from github as a zip file (Click on "Code" -> Download ZIP)
+--* Open QGIS and in the toolbar click "Plugins" -> "Manage and install plugins" -> "Install from ZIP"
+    -> Locate the installed zip and install the plugin to QGIS
 
 Notes:
 * You can automatically upload the images with plugin reloader. To install it go to
