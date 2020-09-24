@@ -3,14 +3,14 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=get Median Functions
+name=Qgis Skimage Methods
 qgisMinimumVersion=3.0
-description=This plugin shows a drop box with all the available functions for the chosen module
+description=With this plugin you can choose skimage methods to process your desired image
 version=0.1
 author=Kristaps Blumbergs
 email=kristapsb52@gmail.com
 
-about=This plugin shows a drop box with all the available functions for the chosen module
+about=With this plugin you can choose skimage methods to process your desired image
 
 tracker=http://bugs
 repository=http://repo

@@ -38,15 +38,15 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	median_functions.py median_functions_dialog.py
+	Qgis_skimage_method_plugin.py Qgis_skimage_method_plugin_dialog.py
 
-PLUGINNAME = median_functions
+PLUGINNAME = QGIS Skimage Methods
 
 PY_FILES = \
 	__init__.py \
-	median_functions.py median_functions_dialog.py
+	Qgis_skimage_method_plugin.py Qgis_skimage_method_plugin_dialog.py
 
-UI_FILES = median_functions_dialog_base.ui
+UI_FILES = Qgis_skimage_method_plugin_dialog_base.ui
 
 EXTRAS = metadata.txt icon.png
 
