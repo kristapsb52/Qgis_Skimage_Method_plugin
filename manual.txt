@@ -14,8 +14,11 @@ method to process your Raster Layer
 in the text field which you can edit. To change the parameters default value
 you have to keep the parameters name and after the '=' add your desired
 value (I.e. "sigma=10"). Keep in mind that the text box on the right says
-what kind of data types the method supports for each parameter.
-"Comment something about if you can leave the data types empty, I.e. cval= "
+what kind of data types the method supports for each parameter, if you decide
+to change any default values. If you do not want to change any values you can
+simply leave them as they are or delete the whole edit box.
+** The image value does not have to be defined, since you already chose it
+from the dropbox **
 
 -> After you have decided what kind of parameters to use to process
 your Raster Layer, click on the 3 dots and select where you wish to

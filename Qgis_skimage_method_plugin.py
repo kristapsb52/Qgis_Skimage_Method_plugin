@@ -40,8 +40,6 @@ import inspect
 import gdal
 from .method_call import *
 
-# TODO There is no icon for the plugin
-# TODO Plugin can't find file path
 class QgisSkimageMethods:
     """QGIS Plugin Implementation."""
 

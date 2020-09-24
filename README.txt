@@ -7,7 +7,7 @@ Necessary packages for this plugins use:
 
 (It is assumed that the user has Qgis 3.8 installed)
 To install the package open OSGeo4W Shell as an administrator and write:
-
+>> py3_env
 >> python -m pip install scikit-image
 
 To upload the plugin to QGIS:
@@ -18,3 +18,12 @@ To upload the plugin to QGIS:
 * After it has been downloaded, in QGIS go to Plugins -> Manage and Install Plugins... ->
 go to Installed and mark the checkbox for "get Median Functions"
 * After all these steps have been done, reload QGIS and enjoy the plugin!
+
+Notes:
+* You can automatically upload the images with plugin reloader. To install it go to
+https://plugins.qgis.org/plugins/plugin_reloader/ You have to install this file
+in to the plugins folder as you did with Qgis Skimage Method plugin. When the plugin
+reloader is installed in to QGIS connect reloader plugin with Qgis Skimage Method plugin
+by clicking on reloader and choosing your desired plugin. ** The way it works is, when
+you have processed your image, simply click on plugin reloader and it will import the
+image in to the project, if it was processed without any errors.
