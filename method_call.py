@@ -16,13 +16,16 @@ def get_list_of_names(parameter_string):
 
 # Returns a list of parameter values
 def get_list_of_values(parameter_string):
+    for x in range(len(parameter_string)):
+        parameter_string = parameter_string.replace(" ", "")
     resultList = []
     tempString = ""
     startOfParameter = False
     for x in range(len(parameter_string)):
         if (parameter_string[x] == ','):
             startOfParameter = False
-            resultList.append(tempString)
+            if(len(tempString) != 0):
+                resultList.append(tempString)
             tempString = ""
         if (startOfParameter):
             tempString += parameter_string[x]
@@ -30,14 +33,14 @@ def get_list_of_values(parameter_string):
                 resultList.append(tempString)
         if (parameter_string[x] == '='):
             startOfParameter = True
-            if (parameter_string[x + 1] == " "):
-                x += 1
 
     return resultList
 
 # The method skips the first element since its not an actual value. The image is read from a path
 # which is then passed as a value
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
+    if(len(parameter_values) == 0):
+        return included_parameters
     for i in range(1, len(parameter_names)):
         for j in range(1, len(included_parameters)):
             if (parameter_names[i] == included_parameters[j][0]):
@@ -134,8 +137,6 @@ def my_slic(image_value, parameter_list):
         if (parameter_names_string.find("max_size_factor") != -1):
             parameter_list[10][1] = int(parameter_list[10][1])
 
-        QMessageBox.information(None, "Test", str(parameter_list))
-
         result = segmentation.slic(image=image_value, n_segments=parameter_list[1][1],
                                    compactness=parameter_list[2][1], max_iter=parameter_list[3][1],
                                    sigma=parameter_list[4][1], spacing=parameter_list[5][1],
@@ -151,29 +152,23 @@ def my_slic(image_value, parameter_list):
 ## Calls Filters functions
 # Calls gaussian method
 def my_gaussian(image_value, parameter_list):
-
-
-
-    param_cval = parameter_list[4][1]
-    param_truncate = parameter_list[7][1]
-    param_multichannel = parameter_list[5][1]
-
     parameter_names_string = ""
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
 
     try:
-        param_sigma = int(parameter_list[1][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[1][1] = int(parameter_list[1][1])
         if (parameter_names_string.find("cval") != -1):
-            param_cval = int(parameter_list[4][1])
+            parameter_list[4][1] = int(parameter_list[4][1])
         if (parameter_names_string.find("truncate") != -1):
-            param_truncate = float(parameter_list[7][1])
+            parameter_list[7][1] = float(parameter_list[7][1])
         if (parameter_names_string.find("multichannel") != -1):
-            param_multichannel = bool(parameter_list[5][1])
+            parameter_list[5][1] = bool(parameter_list[5][1])
 
-        result = filters.gaussian(image=image_value, sigma=param_sigma, output=parameter_list[2][1],
-                                  mode=parameter_list[3][1], cval=param_cval, multichannel=param_multichannel,
-                                  preserve_range=parameter_list[6][1], truncate=param_truncate)
+        result = filters.gaussian(image=image_value, sigma=parameter_list[1][1], output=parameter_list[2][1],
+                                  mode=parameter_list[3][1], cval=parameter_list[4][1], multichannel=parameter_list[5][1],
+                                  preserve_range=parameter_list[6][1], truncate=parameter_list[7][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
@@ -195,14 +190,17 @@ def my_laplace(image_value, parameter_list):
 
 # Calls Median method
 def my_median(image_value, parameter_list):
-
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
     try:
-        cvalStringToInt = int(parameter_list[4][1])
-        selemStringToInt = int(parameter_list[1][1])
+        if (parameter_names_string.find("selem") != -1):
+            parameter_list[1][1] = int(parameter_list[1][1])
+        if (parameter_names_string.find("cval") != -1):
+            parameter_list[4][1] = int(parameter_list[4][1])
 
-        result = filters.median(image=image_value, selem=disk(selemStringToInt), mode=parameter_list[3][1],
-                                cval=cvalStringToInt,
-                                behavior=parameter_list[5][1])
+        result = filters.median(image=image_value, selem=disk(parameter_list[1][1]), mode=parameter_list[3][1],
+                                cval=parameter_list[4][1], behavior=parameter_list[5][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
@@ -246,8 +244,8 @@ def my_threshold_local(image_value, parameter_list):
         parameter_names_string += parameter_list[x][0]
 
     try:
-        param_block_size = int(parameter_list[1][1])
-
+        if(parameter_names_string.find("block_size") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
         if(parameter_names_string.find("offset") != -1):
             parameter_list[3][1] = float(parameter_list[3][1])
         if(parameter_names_string.find("param") != -1):
@@ -255,7 +253,7 @@ def my_threshold_local(image_value, parameter_list):
         if(parameter_names_string.find("cval") != -1):
             parameter_list[6][1] = float(parameter_list[6][1])
 
-        result = image_value > filters.threshold_local(image=image_value, block_size=param_block_size, method=parameter_list[2][1],
+        result = image_value > filters.threshold_local(image=image_value, block_size=parameter_list[1][1], method=parameter_list[2][1],
                                          offset=parameter_list[3][1], mode=parameter_list[4][1],
                                          param=parameter_list[5][1],
                                          cval=parameter_list[6][1])
@@ -278,15 +276,12 @@ def my_unsharp_mask(image_value, parameter_list):
         parameter_names_string += parameter_list[x][0]
 
     try:
-        param_radius = parameter_list[1][1]
-        param_amount = parameter_list[2][1]
-
         if (parameter_names_string.find("radius") != -1):
-            param_radius = float(parameter_list[1][1])
+            parameter_list[1][1] = float(parameter_list[1][1])
         if (parameter_names_string.find("amount") != -1):
-            param_amount = float(parameter_list[2][1])
+            parameter_list[2][1] = float(parameter_list[2][1])
 
-        result = filters.unsharp_mask(image=image_value, radius=param_radius, amount=param_amount,
+        result = filters.unsharp_mask(image=image_value, radius=parameter_list[1][1], amount=parameter_list[2][1],
                                       multichannel=parameter_list[3][1], preserve_range=parameter_list[4][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
