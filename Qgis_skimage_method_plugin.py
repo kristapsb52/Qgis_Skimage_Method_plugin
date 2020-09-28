@@ -234,6 +234,7 @@ class QgisSkimageMethods:
 
     def update_info_box(self):
         self.dlg.InfoBox.clear()
+        method_doc = ""
         chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
         if (self.dlg.ModuleBox.currentIndex() == 0):
             method_doc = inspect.getdoc(getattr(filters, chosenMethod))
@@ -256,6 +257,7 @@ class QgisSkimageMethods:
     def get_arguments_for_method(self):
         # Gets the chosen method
         chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
+        method_info = ""
         try:
             method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
         except TypeError:
@@ -274,10 +276,13 @@ class QgisSkimageMethods:
     # Updates the parameters for the chosen method
     def update_parameters(self):
         method_info = self.get_arguments_for_method()
-        methodArguments = method_info.args
-        # Prints out the parameters in the LineEdit window
-        methodArgumentsString = "= , "
-        self.dlg.Parameters.setText(methodArgumentsString.join(methodArguments) + "= ")
+        try:
+            methodArguments = method_info.args
+            # Prints out the parameters in the LineEdit window
+            methodArgumentsString = "= , "
+            self.dlg.Parameters.setText(methodArgumentsString.join(methodArguments) + "= ")
+        except AttributeError:
+            pass
 
     def select_output_file(self):
         filename, _filter = QFileDialog.getSaveFileName(
