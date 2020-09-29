@@ -1,5 +1,6 @@
 Segmentation
 chan_vese
+felzenszwalb
 quickshift
 slic
 

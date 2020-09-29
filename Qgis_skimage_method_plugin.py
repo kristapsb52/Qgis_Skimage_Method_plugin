@@ -314,6 +314,8 @@ class QgisSkimageMethods:
             return my_find_boundaries(imageArgument, parameterList)
         elif (methodCalled == "chan_vese"):
             return my_chan_vese(imageArgument, parameterList)
+        elif (methodCalled == "felzenszwalb"):
+            return my_felzenszwalb(imageArgument, parameterList)
 
     # Does stuff with the image
     def method_function_call(self, imageArgument):
@@ -440,7 +442,8 @@ class QgisSkimageMethods:
                 # Convert the image to a 2d array
             if (self.dlg.AvailableFunctionsBox.currentText() == "slic" or
                     self.dlg.AvailableFunctionsBox.currentText() == "quickshift" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "chan_vese"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "felzenszwalb"):
                 im = imread(layer_path, as_gray=True)
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
