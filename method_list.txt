@@ -1,4 +1,5 @@
 Segmentation
+chan_vese
 quickshift
 slic
 

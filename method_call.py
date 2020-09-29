@@ -51,6 +51,40 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
 
 
 ## Calls Segmentation functions
+# Calls chan_vese method
+def my_chan_vese(image_value, parameter_list):
+
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+    try:
+        if (parameter_names_string.find("mu") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("lambda1") != -1):
+            parameter_list[2][1] = float(parameter_list[2][1])
+        if (parameter_names_string.find("lambda2") != -1):
+            parameter_list[3][1] = float(parameter_list[3][1])
+        if (parameter_names_string.find("tol") != -1):
+            parameter_list[4][1] = float(parameter_list[4][1])
+        if (parameter_names_string.find("max_iter") != -1):
+            parameter_list[5][1] = int(parameter_list[5][1])
+        if (parameter_names_string.find("dt") != -1):
+            parameter_list[6][1] = float(parameter_list[6][1])
+        if (parameter_names_string.find("extended_output") != -1):
+            parameter_list[8][1] = bool(parameter_list[8][1])
+        QMessageBox.information(None, "Test", str(parameter_list))
+        result = segmentation.chan_vese(image=image_value, mu=parameter_list[1][1], lambda1=parameter_list[2][1],
+                                        lambda2=parameter_list[3][1], tol=parameter_list[4][1], max_iter=parameter_list[5][1],
+                                        dt=parameter_list[6][1], init_level_set=parameter_list[7][1], extended_output=parameter_list[8][1])
+
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    if (parameter_list[8][1] == True):
+        return result[1] * 100
+    else:
+        return result * 100
+
 # Calls clear_border method
 def my_clear_border(image_value, parameter_list):
 
