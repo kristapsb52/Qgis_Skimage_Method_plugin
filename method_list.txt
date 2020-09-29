@@ -9,6 +9,9 @@ Filter
 gaussian
 laplace
 median
+prewitt
+prewitt_h
+prewitt_v
 sobel
 sobel_v
 sobel_h

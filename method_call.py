@@ -282,6 +282,28 @@ def my_median(image_value, parameter_list):
 
     return result
 
+# Calss prewitt method
+def my_prewitt(image_value, parameter_list):
+    try:
+        result = filters.prewitt(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result * 100
+def my_prewitt_h(image_value, parameter_list):
+    try:
+        result = filters.prewitt_h(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result * 100
+def my_prewitt_v(image_value, parameter_list):
+    try:
+        result = filters.prewitt_v(image=image_value, mask=parameter_list[1][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result * 100
 
 # Calls Sobel method
 def my_sobel(image_value, parameter_list):

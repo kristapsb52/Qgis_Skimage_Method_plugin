@@ -318,6 +318,12 @@ class QgisSkimageMethods:
             return my_felzenszwalb(imageArgument, parameterList)
         elif (methodCalled == "inverse_gaussian_gradient"):
             return my_inverse_gaussian_gradient(imageArgument, parameterList)
+        elif (methodCalled == "prewitt"):
+            return my_prewitt(imageArgument, parameterList)
+        elif (methodCalled == "prewitt_h"):
+            return my_prewitt_h(imageArgument, parameterList)
+        elif (methodCalled == "prewitt_v"):
+            return my_prewitt_v(imageArgument, parameterList)
 
     # Does stuff with the image
     def method_function_call(self, imageArgument):
@@ -446,7 +452,10 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "quickshift" or
                     self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
                     self.dlg.AvailableFunctionsBox.currentText() == "felzenszwalb" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "inverse_gaussian_gradient"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "inverse_gaussian_gradient" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_h" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_v"):
                 im = imread(layer_path, as_gray=True)
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
