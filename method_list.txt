@@ -18,3 +18,9 @@ sobel_h
 threshold_local
 threshold_otsu
 unsharp_mask
+
+Exposure
+adjust_gamma
+adjust_log
+adjust_sigmoid
+equalize_hist

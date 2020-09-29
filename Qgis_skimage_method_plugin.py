@@ -208,7 +208,7 @@ class QgisSkimageMethods:
         if (self.dlg.ModuleBox.currentIndex == 0):
             chosen_method = "Filter"
         elif (self.dlg.ModuleBox.currentIndex() == 1):
-            chosen_method = "Morphology"
+            chosen_method = "Exposure"
         elif (self.dlg.ModuleBox.currentIndex() == 2):
             chosen_method = "Segmentation"
 
@@ -239,7 +239,7 @@ class QgisSkimageMethods:
         if (self.dlg.ModuleBox.currentIndex() == 0):
             method_doc = inspect.getdoc(getattr(filters, chosenMethod))
         elif (self.dlg.ModuleBox.currentIndex() == 1):
-            method_doc = inspect.getdoc(getattr(morphology, chosenMethod))
+            method_doc = inspect.getdoc(getattr(exposure, chosenMethod))
         elif (self.dlg.ModuleBox.currentIndex() == 2):
             method_doc = inspect.getdoc(getattr(segmentation, chosenMethod))
 
@@ -266,7 +266,7 @@ class QgisSkimageMethods:
             if (self.dlg.ModuleBox.currentIndex() == 0):
                 method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 1):
-                method_info = inspect.getfullargspec(getattr(morphology, chosenMethod))
+                method_info = inspect.getfullargspec(getattr(exposure, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 2):
                 method_info = inspect.getfullargspec(getattr(segmentation, chosenMethod))
         # Gets the parameters for method
@@ -324,6 +324,10 @@ class QgisSkimageMethods:
             return my_prewitt_h(imageArgument, parameterList)
         elif (methodCalled == "prewitt_v"):
             return my_prewitt_v(imageArgument, parameterList)
+        elif (methodCalled == "adjust_gamma"):
+            return my_adjust_gamma(imageArgument, parameterList)
+        elif (methodCalled == "adjust_log"):
+            return my_adjust_log(imageArgument, parameterList)
 
     # Does stuff with the image
     def method_function_call(self, imageArgument):
@@ -387,7 +391,7 @@ class QgisSkimageMethods:
         """Run method that performs all the real work"""
 
         # List of options for modules
-        modules = ["filters", "morphology", "segmentation"]
+        modules = ["filters", "exposure", "segmentation"]
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start == True:
@@ -471,7 +475,9 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
                     self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
                     self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_gamma" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_log"):
 
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 

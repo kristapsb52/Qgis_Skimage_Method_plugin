@@ -1,4 +1,4 @@
-from skimage import filters, morphology, segmentation
+from skimage import filters, morphology, segmentation, exposure
 from skimage.morphology import disk
 from qgis.PyQt.QtWidgets import QMessageBox
 import re
@@ -385,3 +385,41 @@ def my_unsharp_mask(image_value, parameter_list):
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
     return result * 100
+
+## Calls exposure methods
+# Calls adjust_gamma method
+def my_adjust_gamma(image_value, parameter_list):
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+
+    try:
+        if (parameter_names_string.find("gamma") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("gain") != -1):
+            parameter_list[2][1] = float(parameter_list[2][1])
+
+        result = exposure.adjust_gamma(image=image_value, gamma=parameter_list[1][1], gain=parameter_list[2][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result
+
+# Calls adjust_log method
+def my_adjust_log(image_value, parameter_list):
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+    try:
+        if (parameter_names_string.find("gain") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("inv") != -1):
+            parameter_list[2][1] = bool(parameter_list[2][1])
+        result = exposure.adjust_log(image=image_value, gain=parameter_list[1][1], inv=parameter_list[2][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result
+# Calls adjust_sigmoid method
+
+# Calls equalize_hist method
