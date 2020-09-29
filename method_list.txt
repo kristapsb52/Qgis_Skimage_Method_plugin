@@ -1,6 +1,7 @@
 Segmentation
 chan_vese
 felzenszwalb
+inverse_gaussian_gradient
 quickshift
 slic
 

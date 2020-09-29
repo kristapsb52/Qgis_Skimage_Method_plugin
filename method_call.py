@@ -91,23 +91,41 @@ def my_felzenszwalb(image_value, parameter_list):
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
 
-    #try:
-    if (parameter_names_string.find("scale") != -1):
-        parameter_list[1][1] = int(parameter_list[1][1])
-    if (parameter_names_string.find("sigma") != -1):
-        parameter_list[2][1] = float(parameter_list[2][1])
-    if (parameter_names_string.find("min_size") != -1):
-        parameter_list[3][1] = int(parameter_list[3][1])
-    if (parameter_names_string.find("multichannel") != -1):
-        parameter_list[4][1] = bool(parameter_list[4][1])
+    try:
+        if (parameter_names_string.find("scale") != -1):
+            parameter_list[1][1] = int(parameter_list[1][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[2][1] = float(parameter_list[2][1])
+        if (parameter_names_string.find("min_size") != -1):
+            parameter_list[3][1] = int(parameter_list[3][1])
+        if (parameter_names_string.find("multichannel") != -1):
+            parameter_list[4][1] = bool(parameter_list[4][1])
 
-    QMessageBox.information(None, "Test", str(parameter_list))
-    result = segmentation.felzenszwalb(image=image_value, scale=parameter_list[1][1], sigma=parameter_list[2][1],
-                                       min_size=parameter_list[3][1], multichannel=parameter_list[4][1])
-    QMessageBox.information(None, "Test", str(result))
-    # except:
-    #     QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+        result = segmentation.felzenszwalb(image=image_value, scale=parameter_list[1][1], sigma=parameter_list[2][1],
+                                           min_size=parameter_list[3][1], multichannel=parameter_list[4][1])
+
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
     return result
+
+# Calls inverse_gaussian_gradient
+def my_inverse_gaussian_gradient(image_value, parameter_list):
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
+
+    try:
+        if (parameter_names_string.find("alpha") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("sigma") != -1):
+            parameter_list[2][1] = float(parameter_list[2][1])
+
+        result = segmentation.inverse_gaussian_gradient(image=image_value, alpha=parameter_list[1][1], sigma=parameter_list[2][1])
+
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+
+    return result * 100
 
 # Calls clear_border method
 def my_clear_border(image_value, parameter_list):
