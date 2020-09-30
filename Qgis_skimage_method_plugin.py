@@ -24,7 +24,7 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox, QDialog, QPushButton
-from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer
+from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer, QgsCoordinateReferenceSystem
 from qgis.utils import iface
 from qgis.gui import QgsDialog
 
@@ -38,6 +38,7 @@ from .Qgis_skimage_method_usermanual_dialog import userManualDialog
 import os.path
 import inspect
 import gdal
+import osr
 from .method_call import *
 
 class QgisSkimageMethods:
@@ -332,6 +333,8 @@ class QgisSkimageMethods:
             return my_adjust_sigmoid(imageArgument, parameterList)
         elif (methodCalled == "equalize_hist"):
             return my_equalize_hist(imageArgument, parameterList)
+        elif (methodCalled == "laplace"):
+            return my_laplace(imageArgument, parameterList)
 
     # Does stuff with the image
     def method_function_call(self, imageArgument):
@@ -467,10 +470,23 @@ class QgisSkimageMethods:
                 im = imread(layer_path, as_gray=True)
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
+                geotrans = gdalIm.GetGeoTransform()
+                proj = gdalIm.GetProjection()
+                if proj == "":
+                    crs = QgsCoordinateReferenceSystem("EPSG:4326")
+                    crs.createFromProj4("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+                    dataset.SetProjection(crs)
+
+                else:
+                    dataset.SetProjection(proj)
+
+                dataset.SetGeoTransform(geotrans)
+
                 resultArray = self.method_function_call(im)
                 dataset.GetRasterBand(1).WriteArray(resultArray)
 
             if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "laplace" or
                     self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
                     self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
                     self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
@@ -484,8 +500,19 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_log" or
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid" or
                     self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
-
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+
+                geotrans = gdalIm.GetGeoTransform()
+                proj = gdalIm.GetProjection()
+                if proj == "":
+                    crs = QgsCoordinateReferenceSystem("EPSG:4326")
+                    crs.createFromProj4("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+                    dataset.SetProjection(crs)
+
+                else:
+                    dataset.SetProjection(proj)
+
+                dataset.SetGeoTransform(geotrans)
 
                 resultArray_r = self.method_function_call(im[:, :, 0])
                 resultArray_g = self.method_function_call(im[:, :, 1])
@@ -495,10 +522,6 @@ class QgisSkimageMethods:
                 dataset.GetRasterBand(2).WriteArray(resultArray_g)
                 dataset.GetRasterBand(3).WriteArray(resultArray_b)
 
-            geotrans = gdalIm.GetGeoTransform()
-            proj = gdalIm.GetProjection()
-            dataset.SetGeoTransform(geotrans)
-            dataset.SetProjection(proj)
             dataset.FlushCache()
 
             # If image isn't included

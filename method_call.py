@@ -73,7 +73,6 @@ def my_chan_vese(image_value, parameter_list):
             parameter_list[6][1] = float(parameter_list[6][1])
         if (parameter_names_string.find("extended_output") != -1):
             parameter_list[8][1] = bool(parameter_list[8][1])
-        QMessageBox.information(None, "Test", str(parameter_list))
         result = segmentation.chan_vese(image=image_value, mu=parameter_list[1][1], lambda1=parameter_list[2][1],
                                         lambda2=parameter_list[3][1], tol=parameter_list[4][1], max_iter=parameter_list[5][1],
                                         dt=parameter_list[6][1], init_level_set=parameter_list[7][1], extended_output=parameter_list[8][1])
@@ -242,7 +241,6 @@ def my_gaussian(image_value, parameter_list):
             parameter_list[7][1] = float(parameter_list[7][1])
         if (parameter_names_string.find("multichannel") != -1):
             parameter_list[5][1] = bool(parameter_list[5][1])
-        QMessageBox.information(None, "Test", str(parameter_list))
         result = filters.gaussian(image=image_value, sigma=parameter_list[1][1], output=parameter_list[2][1],
                                   mode=parameter_list[3][1], cval=parameter_list[4][1], multichannel=parameter_list[5][1],
                                   preserve_range=parameter_list[6][1], truncate=parameter_list[7][1])
@@ -256,13 +254,13 @@ def my_gaussian(image_value, parameter_list):
 def my_laplace(image_value, parameter_list):
 
     try:
-        param_ksize = int(parameter_list[0][1])
+        param_ksize = int(parameter_list[1][1])
 
-        result = filters.laplace(image=image_value, ksize=param_ksize, mask=parameter_list[1][1])
+        result = filters.laplace(image=image_value, ksize=param_ksize, mask=parameter_list[2][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
-    return result
+    return result * 100
 
 
 # Calls Median method
