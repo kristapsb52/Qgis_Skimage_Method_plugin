@@ -41,8 +41,9 @@ def get_list_of_values(parameter_string):
 def set_parameter_values(included_parameters, parameter_names, parameter_values):
     if(len(parameter_values) == 0):
         return included_parameters
-    for i in range(1, len(parameter_names)):
-        for j in range(1, len(included_parameters)):
+
+    for i in range(0, len(parameter_names)):
+        for j in range(0, len(included_parameters)):
             if (parameter_names[i] == included_parameters[j][0]):
                 included_parameters[j][1] = parameter_values[i]
                 break
@@ -54,7 +55,7 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
 # Calls chan_vese method
 def my_chan_vese(image_value, parameter_list):
 
-    parameter_names_string = ""
+    parameter_names_string = " "
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
     try:
@@ -241,7 +242,7 @@ def my_gaussian(image_value, parameter_list):
             parameter_list[7][1] = float(parameter_list[7][1])
         if (parameter_names_string.find("multichannel") != -1):
             parameter_list[5][1] = bool(parameter_list[5][1])
-
+        QMessageBox.information(None, "Test", str(parameter_list))
         result = filters.gaussian(image=image_value, sigma=parameter_list[1][1], output=parameter_list[2][1],
                                   mode=parameter_list[3][1], cval=parameter_list[4][1], multichannel=parameter_list[5][1],
                                   preserve_range=parameter_list[6][1], truncate=parameter_list[7][1])
@@ -421,5 +422,21 @@ def my_adjust_log(image_value, parameter_list):
 
     return result
 # Calls adjust_sigmoid method
+def my_adjust_sigmoid(image_value, parameter_list):
+    parameter_names_string = ""
+    for x in range(len(parameter_list)):
+        parameter_names_string += parameter_list[x][0]
 
+    try:
+        if (parameter_names_string.find("cutoff") != -1):
+            parameter_list[1][1] = float(parameter_list[1][1])
+        if (parameter_names_string.find("gain") != -1):
+            parameter_list[2][1] = float(parameter_list[2][1])
+        if (parameter_names_string.find("inv") != -1):
+            parameter_list[3][1] = bool(parameter_list[3][1])
+        result = exposure.adjust_sigmoid(image=image_value, cutoff=parameter_list[1][1],
+                                         gain=parameter_list[2][1], inv=parameter_list[3][1])
+    except:
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+    return result
 # Calls equalize_hist method
