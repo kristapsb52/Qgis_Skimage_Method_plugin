@@ -447,9 +447,7 @@ def my_equalize_hist(image_value, parameter_list):
     try:
         if (parameter_names_string.find("nbins") != -1):
             parameter_list[1][1] = int(parameter_list[1][1])
-        if (parameter_names_string.find("mask") != -1):
-            parameter_list[2][1] = float(parameter_list[2][1])
-        result = exposure.equalize_hist(image=image_value, nbins=parameter_list[1][1], mask=parameter_list[2][1])
+        result = exposure.equalize_hist(image=image_value, nbins=parameter_list[1][1])
     except:
-
+        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
     return result * 100

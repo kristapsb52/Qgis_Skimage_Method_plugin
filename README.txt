@@ -5,7 +5,7 @@ This plugin uses Scikit-image methods to process images
 Necessary packages for this plugins use:
     * scikit-image
 
-(It is assumed that the user has Qgis 3.8 installed)
+(It is assumed that the user has Qgis 3.8 or newer version installed)
 To install the package open OSGeo4W Shell as an administrator and write:
 >> py3_env
 >> python -m pip install scikit-image
