@@ -330,6 +330,8 @@ class QgisSkimageMethods:
             return my_adjust_log(imageArgument, parameterList)
         elif (methodCalled == "adjust_sigmoid"):
             return my_adjust_sigmoid(imageArgument, parameterList)
+        elif (methodCalled == "equalize_hist"):
+            return my_equalize_hist(imageArgument, parameterList)
 
     # Does stuff with the image
     def method_function_call(self, imageArgument):
@@ -480,7 +482,8 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries" or
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_gamma" or
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_log" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
 
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
