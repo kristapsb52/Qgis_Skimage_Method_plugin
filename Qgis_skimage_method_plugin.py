@@ -447,18 +447,8 @@ class QgisSkimageMethods:
 
             x_pixels = im.shape[1]
             y_pixels = im.shape[0]
-
             driver = gdal.GetDriverByName('GTiff')
-            # dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
-
-            # Get the arguments for method to check if image is included
-            #methodArguments = self.get_arguments_for_method()
-            #isImageIncluded = re.search("image", methodArguments)
-
-            # If image is included
             ## TODO Make it so its possible to pass a grayscale image
-            #if (isImageIncluded):
-                # Convert the image to a 2d array
             if (self.dlg.AvailableFunctionsBox.currentText() == "slic" or
                     self.dlg.AvailableFunctionsBox.currentText() == "quickshift" or
                     self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
@@ -470,20 +460,9 @@ class QgisSkimageMethods:
                 im = imread(layer_path, as_gray=True)
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
-                geotrans = gdalIm.GetGeoTransform()
-                proj = gdalIm.GetProjection()
-                if proj == "":
-                    crs = QgsCoordinateReferenceSystem("EPSG:4326")
-                    crs.createFromProj4("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-                    dataset.SetProjection(crs)
-
-                else:
-                    dataset.SetProjection(proj)
-
-                dataset.SetGeoTransform(geotrans)
-
                 resultArray = self.method_function_call(im)
                 dataset.GetRasterBand(1).WriteArray(resultArray)
+
 
             if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
                     self.dlg.AvailableFunctionsBox.currentText() == "laplace" or
@@ -502,35 +481,24 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
-                geotrans = gdalIm.GetGeoTransform()
-                proj = gdalIm.GetProjection()
-                if proj == "":
-                    crs = QgsCoordinateReferenceSystem("EPSG:4326")
-                    crs.createFromProj4("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-                    dataset.SetProjection(crs)
-
-                else:
-                    dataset.SetProjection(proj)
-
-                dataset.SetGeoTransform(geotrans)
-
                 resultArray_r = self.method_function_call(im[:, :, 0])
                 resultArray_g = self.method_function_call(im[:, :, 1])
                 resultArray_b = self.method_function_call(im[:, :, 2])
-
+                QMessageBox.information(None, "Test", str(resultArray_r))
+                QMessageBox.information(None, "Test", str(resultArray_g))
+                QMessageBox.information(None, "Test", str(resultArray_b))
                 dataset.GetRasterBand(1).WriteArray(resultArray_r)
                 dataset.GetRasterBand(2).WriteArray(resultArray_g)
                 dataset.GetRasterBand(3).WriteArray(resultArray_b)
 
-            dataset.FlushCache()
+            proj = gdalIm.GetProjection()
 
-            # If image isn't included
-            #else:
-                # Do nothing for now
-                #pass
-
-            # if not rlayer.isValid():
-            #    QMessageBox.information(None, "Test", "Layer failed to load")
+            # If the chosen layer has a projection then add that, to the processed image
+            if proj != "":
+                geotrans = gdalIm.GetGeoTransform()
+                dataset.SetProjection(proj)
+                dataset.SetGeoTransform(geotrans)
+                dataset.FlushCache()
 
             self.iface.messageBar().pushMessage(
                 "Success", "Output file written at " + file_name,
