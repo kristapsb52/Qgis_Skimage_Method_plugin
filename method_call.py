@@ -44,9 +44,12 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
 
     for i in range(0, len(parameter_names)):
         for j in range(0, len(included_parameters)):
-            if (parameter_names[i] == included_parameters[j][0]):
-                included_parameters[j][1] = parameter_values[i]
-                break
+            try:
+                if (parameter_names[i] == included_parameters[j][0]):
+                    included_parameters[j][1] = parameter_values[i]
+                    break
+            except IndexError:
+                included_parameters[j].append(parameter_values[i])
 
     return included_parameters
 
@@ -168,27 +171,27 @@ def my_quickshift(image_value, parameter_list):
     for x in range(len(parameter_list)):
         parameter_names_string += parameter_list[x][0]
 
-    try:
-        if (parameter_names_string.find("ratio") != -1):
-            parameter_list[1][1] = float(parameter_list[1][1])
-        if (parameter_names_string.find("kernel_size") != -1):
-            parameter_list[2][1] = int(parameter_list[2][1])
-        if (parameter_names_string.find("max_dist") != -1):
-            parameter_list[3][1] = int(parameter_list[3][1])
-        if (parameter_names_string.find("return_tree") != -1):
-            parameter_list[4][1] = bool(parameter_list[4][1])
-        if (parameter_names_string.find("sigma") != -1):
-            parameter_list[5][1] = int(parameter_list[5][1])
-        if (parameter_names_string.find("convert2lab") != -1):
-            parameter_list[6][1] = bool(parameter_list[6][1])
-        if (parameter_names_string.find("random_seed") != -1):
-            parameter_list[7][1] = int(parameter_list[7][1])
+    # try:
+    if (parameter_names_string.find("ratio") != -1):
+        parameter_list[1][1] = float(parameter_list[1][1])
+    if (parameter_names_string.find("kernel_size") != -1):
+        parameter_list[2][1] = int(parameter_list[2][1])
+    if (parameter_names_string.find("max_dist") != -1):
+        parameter_list[3][1] = int(parameter_list[3][1])
+    if (parameter_names_string.find("return_tree") != -1):
+        parameter_list[4][1] = bool(parameter_list[4][1])
+    if (parameter_names_string.find("sigma") != -1):
+        parameter_list[5][1] = int(parameter_list[5][1])
+    if (parameter_names_string.find("convert2lab") != -1):
+        parameter_list[6][1] = bool(parameter_list[6][1])
+    if (parameter_names_string.find("random_seed") != -1):
+        parameter_list[7][1] = int(parameter_list[7][1])
 
-        result = segmentation.quickshift(image=image_value, ratio=parameter_list[1][1], kernel_size=parameter_list[2][1],
-                                     max_dist=parameter_list[3][1], return_tree=parameter_list[4][1], sigma=parameter_list[5][1],
-                                     convert2lab=parameter_list[6][1], random_seed=parameter_list[7][1])
-    except:
-        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+    result = segmentation.quickshift(image=image_value, ratio=parameter_list[1][1], kernel_size=parameter_list[2][1],
+                                 max_dist=parameter_list[3][1], return_tree=parameter_list[4][1], sigma=parameter_list[5][1],
+                                 convert2lab=parameter_list[6][1], random_seed=parameter_list[7][1])
+    # except:
+    #     QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
     return result
 
 
@@ -327,7 +330,7 @@ def my_sobel_h(image_value, parameter_list):
 def my_sobel_v(image_value, parameter_list):
 
     try:
-        result = filters.sobel_h(image=image_value, mask=parameter_list[1][1])
+        result = filters.sobel_v(image=image_value, mask=parameter_list[1][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
 
@@ -342,17 +345,19 @@ def my_threshold_local(image_value, parameter_list):
 
     try:
         if(parameter_names_string.find("block_size") != -1):
-            parameter_list[1][1] = float(parameter_list[1][1])
+            parameter_list[1][1] = int(parameter_list[1][1])
         if(parameter_names_string.find("offset") != -1):
             parameter_list[3][1] = float(parameter_list[3][1])
-        if(parameter_names_string.find("param") != -1):
-            parameter_list[5][1] = int(parameter_list[5][1])
+        try:
+            if(parameter_names_string.find("param") != -1):
+                parameter_list[5][1] = int(parameter_list[5][1])
+        except TypeError:
+            pass
         if(parameter_names_string.find("cval") != -1):
             parameter_list[6][1] = float(parameter_list[6][1])
 
         result = image_value > filters.threshold_local(image=image_value, block_size=parameter_list[1][1], method=parameter_list[2][1],
-                                         offset=parameter_list[3][1], mode=parameter_list[4][1],
-                                         param=parameter_list[5][1],
+                                         offset=parameter_list[3][1], mode=parameter_list[4][1], param=parameter_list[5][1],
                                          cval=parameter_list[6][1])
     except:
         QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")

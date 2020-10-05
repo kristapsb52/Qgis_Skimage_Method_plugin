@@ -306,7 +306,7 @@ class QgisSkimageMethods:
         elif (methodCalled == "threshold_local"):
             return my_threshold_local(imageArgument, parameterList)
         elif (methodCalled == "threshold_otsu"):
-            return my_threshold_local(imageArgument, parameterList)
+            return my_threshold_otsu(imageArgument, parameterList)
         elif (methodCalled == "unsharp_mask"):
             return my_unsharp_mask(imageArgument, parameterList)
         elif (methodCalled == "quickshift"):
@@ -449,14 +449,15 @@ class QgisSkimageMethods:
             y_pixels = im.shape[0]
             driver = gdal.GetDriverByName('GTiff')
             ## TODO Make it so its possible to pass a grayscale image
-            if (self.dlg.AvailableFunctionsBox.currentText() == "slic" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "quickshift" or
+            if (self.dlg.AvailableFunctionsBox.currentText() == "slic"or
                     self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
                     self.dlg.AvailableFunctionsBox.currentText() == "felzenszwalb" or
                     self.dlg.AvailableFunctionsBox.currentText() == "inverse_gaussian_gradient" or
                     self.dlg.AvailableFunctionsBox.currentText() == "prewitt" or
                     self.dlg.AvailableFunctionsBox.currentText() == "prewitt_h" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_v"):
+                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_v" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
+                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"):
                 im = imread(layer_path, as_gray=True)
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
@@ -470,8 +471,6 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
                     self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
                     self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"or
-                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
                     self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
                     self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
                     self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries" or
@@ -484,12 +483,15 @@ class QgisSkimageMethods:
                 resultArray_r = self.method_function_call(im[:, :, 0])
                 resultArray_g = self.method_function_call(im[:, :, 1])
                 resultArray_b = self.method_function_call(im[:, :, 2])
-                QMessageBox.information(None, "Test", str(resultArray_r))
-                QMessageBox.information(None, "Test", str(resultArray_g))
-                QMessageBox.information(None, "Test", str(resultArray_b))
                 dataset.GetRasterBand(1).WriteArray(resultArray_r)
                 dataset.GetRasterBand(2).WriteArray(resultArray_g)
                 dataset.GetRasterBand(3).WriteArray(resultArray_b)
+
+            if (self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+
+                resultArray = self.method_function_call(im)
+                dataset.GetRasterBand(1).WriteArray(resultArray)
 
             proj = gdalIm.GetProjection()
 
