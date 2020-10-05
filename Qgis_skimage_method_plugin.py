@@ -291,9 +291,9 @@ class QgisSkimageMethods:
         self.dlg.OutputFile.setText(filename)
 
     def method_function_call_helper(self, methodCalled, parameterList, imageArgument):
-        if (methodCalled == "median"):
-            return my_median(imageArgument, parameterList)
-        elif (methodCalled == "slic"):
+        # if (methodCalled == "median"):
+        #     return my_median(imageArgument, parameterList)
+        if (methodCalled == "slic"):
             return my_slic(imageArgument, parameterList)
         elif (methodCalled == "gaussian"):
             return my_gaussian(imageArgument, parameterList)

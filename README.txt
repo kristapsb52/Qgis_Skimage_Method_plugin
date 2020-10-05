@@ -1,6 +1,6 @@
 Qgis Skimage(Scikit-image) method plugin
 
-This plugin uses Scikit-image methods to process images
+This plugin uses Scikit-image methods to process images and is used for GeoTiff images only
 
 Necessary packages for this plugins use:
     * scikit-image
