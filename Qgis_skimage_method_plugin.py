@@ -180,9 +180,11 @@ class QgisSkimageMethods:
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
-        file_path = self.dlg.OutputFile.text()
-        file_name = self.get_save_file_name()
-
+        # try:
+        #     file_path = self.dlg.OutputFile.text()
+        #     file_name = self.get_save_file_name()
+        # except:
+        #     pass
         for action in self.actions:
             self.iface.removePluginVectorMenu(
                 self.tr(u'&Qgis Skimage Method'),
@@ -190,7 +192,7 @@ class QgisSkimageMethods:
             self.iface.removeToolBarIcon(action)
 
         # Method 1
-        iface.addRasterLayer(file_path, file_name)
+        # iface.addRasterLayer(file_path, file_name)
 
         # Method 2
         # rlayer = QgsRasterLayer(file_path, file_name)
@@ -237,12 +239,15 @@ class QgisSkimageMethods:
         self.dlg.InfoBox.clear()
         method_doc = ""
         chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
-        if (self.dlg.ModuleBox.currentIndex() == 0):
-            method_doc = inspect.getdoc(getattr(filters, chosenMethod))
-        elif (self.dlg.ModuleBox.currentIndex() == 1):
-            method_doc = inspect.getdoc(getattr(exposure, chosenMethod))
-        elif (self.dlg.ModuleBox.currentIndex() == 2):
-            method_doc = inspect.getdoc(getattr(segmentation, chosenMethod))
+        try:
+            if (self.dlg.ModuleBox.currentIndex() == 0):
+                method_doc = inspect.getdoc(getattr(filters, chosenMethod))
+            elif (self.dlg.ModuleBox.currentIndex() == 1):
+                method_doc = inspect.getdoc(getattr(exposure, chosenMethod))
+            elif (self.dlg.ModuleBox.currentIndex() == 2):
+                method_doc = inspect.getdoc(getattr(segmentation, chosenMethod))
+        except AttributeError:
+            pass
 
         parameter_line = False
         for line in method_doc.splitlines():
@@ -263,6 +268,8 @@ class QgisSkimageMethods:
             method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
         except TypeError:
             self.dlg.Parameters.setText("No arguments for chosen function")
+        except AttributeError:
+            pass
         except:
             if (self.dlg.ModuleBox.currentIndex() == 0):
                 method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
@@ -426,7 +433,9 @@ class QgisSkimageMethods:
 
         # Clears and fills the Module box with options available for user
         self.dlg.ModuleBox.addItems(modules)
-
+        self.update_function_list()
+        self.update_info_box()
+        self.update_parameters()
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop

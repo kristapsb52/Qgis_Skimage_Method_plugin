@@ -4,8 +4,6 @@
     <list default="true" id="e68ff077-b44c-4d6d-ac52-c4eb4d256531" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Qgis_skimage_method_plugin.py" beforeDir="false" afterPath="$PROJECT_DIR$/Qgis_skimage_method_plugin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.txt" beforeDir="false" afterPath="$PROJECT_DIR$/README.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/method_call.py" beforeDir="false" afterPath="$PROJECT_DIR$/method_call.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +29,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../save_attributes" />
     <property name="settings.editor.selected.configurable" value="preferences.toDoOptions" />
   </component>
   <component name="RecentsManager">
@@ -71,6 +69,10 @@
       <screen x="-1920" y="121" width="1920" height="1040" />
     </state>
     <state x="-1828" y="213" width="1736" height="856" key="DiffContextDialog/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1599722187558" />
+    <state x="-1180" y="397" key="FileChooserDialogImpl" timestamp="1601896334754">
+      <screen x="-1920" y="121" width="1920" height="1040" />
+    </state>
+    <state x="-1180" y="397" key="FileChooserDialogImpl/-1920.121.1920.1040/0.0.1920.1160@-1920.121.1920.1040" timestamp="1601896334754" />
     <state x="-1459" y="284" key="SettingsEditor" timestamp="1600256111028">
       <screen x="-1920" y="121" width="1920" height="1040" />
     </state>
