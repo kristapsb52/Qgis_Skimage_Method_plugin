@@ -487,14 +487,19 @@ class QgisSkimageMethods:
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_log" or
                     self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid" or
                     self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
-                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+                if (im.ndim == 3):
+                    dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
 
-                resultArray_r = self.method_function_call(im[:, :, 0])
-                resultArray_g = self.method_function_call(im[:, :, 1])
-                resultArray_b = self.method_function_call(im[:, :, 2])
-                dataset.GetRasterBand(1).WriteArray(resultArray_r)
-                dataset.GetRasterBand(2).WriteArray(resultArray_g)
-                dataset.GetRasterBand(3).WriteArray(resultArray_b)
+                    resultArray_r = self.method_function_call(im[:, :, 0])
+                    resultArray_g = self.method_function_call(im[:, :, 1])
+                    resultArray_b = self.method_function_call(im[:, :, 2])
+                    dataset.GetRasterBand(1).WriteArray(resultArray_r)
+                    dataset.GetRasterBand(2).WriteArray(resultArray_g)
+                    dataset.GetRasterBand(3).WriteArray(resultArray_b)
+                else:
+                    dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+                    resultArray = self.method_function_call(im)
+                    dataset.GetRasterBand(1).WriteArray(resultArray)
 
             if (self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
                 dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
