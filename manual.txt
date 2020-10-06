@@ -5,7 +5,8 @@ In this plugin there are 5 necessary values that you have to describe:
 which of the Raster Layers you would like to process
 
 -> After you have chosen your raster layer, you have to choose a module,
-either you want to segment or filter your image.
+either you want to use Segmentation to see the segments of your image, Filter
+to filter the image or Exposure to adjust the images values.
 
 -> After you've chosen your module, the plugin will show the available
 method to process your Raster Layer
@@ -16,7 +17,7 @@ you have to keep the parameters name and after the '=' add your desired
 value (I.e. "sigma=10"). Keep in mind that the text box on the right says
 what kind of data types the method supports for each parameter, if you decide
 to change any default values. If you do not want to change any values you can
-simply leave them as they are or delete the whole edit box.
+simply leave them as they are or delete the whole string in the edit box.
 ** The image value does not have to be defined, since you already chose it
 from the dropbox **
 
@@ -26,6 +27,7 @@ save your processed image.
 
 If every data type was correct when clicking OK the plugin will start to
 process your image, if a data type was incorrect then the plugin should
-show an error message.
+show an error message. Some methods may take time to process your image, but
+that depends on how large is chosen image
 
 Thank you for using this plugin!
