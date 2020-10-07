@@ -47,9 +47,6 @@ def set_parameter_values(included_parameters, parameter_names, parameter_values)
     if(len(parameter_values) == 0):
         return included_parameters
 
-    QMessageBox.information(None, "Test", str(parameter_names))
-    QMessageBox.information(None, "Test", str(parameter_values))
-    QMessageBox.information(None, "Test", str(included_parameters))
     for i in range(0, len(parameter_names)):
         for j in range(0, len(included_parameters)):
             try:

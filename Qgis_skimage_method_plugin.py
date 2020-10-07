@@ -186,7 +186,7 @@ class QgisSkimageMethods:
         # except:
         #     pass
         for action in self.actions:
-            self.iface.removePluginVectorMenu(
+            self.iface.removePluginRasterMenu(
                 self.tr(u'&Qgis Skimage Method'),
                 action)
             self.iface.removeToolBarIcon(action)
