@@ -157,7 +157,7 @@ class QgisSkimageMethods:
             self.iface.addToolBarIcon(action)
 
         if add_to_menu:
-            self.iface.addPluginToVectorMenu(
+            self.iface.addPluginToRasterMenu(
                 self.menu,
                 action)
 
