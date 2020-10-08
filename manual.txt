@@ -18,6 +18,8 @@ value (I.e. "sigma=10"). Keep in mind that the text box on the right says
 what kind of data types the method supports for each parameter, if you decide
 to change any default values. If you do not want to change any values you can
 simply leave them as they are or delete the whole string in the edit box.
+If the parameter name will not be correct, the code will take its default
+value, it will only show errors if the value types are not correct
 ** The image value does not have to be defined, since you already chose it
 from the dropbox **
 

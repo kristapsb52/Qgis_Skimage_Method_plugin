@@ -447,10 +447,8 @@ class QgisSkimageMethods:
             dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
             resultArray = self.method_function_call(im)
-            if (resultArray == None):
-                if (task.isCanceled):
-                    self.stopped(task)
-                    return None
+            if (type(resultArray) == str):
+                raise Exception(resultArray)
             dataset.GetRasterBand(1).WriteArray(resultArray)
 
         if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
@@ -474,7 +472,6 @@ class QgisSkimageMethods:
                 resultArray_b = self.method_function_call(im[:, :, 2])
 
                 if (type(resultArray_r) == str or type(resultArray_g) == str or type(resultArray_b) == str):
-                #if (resultArray_r == None or resultArray_g == None or resultArray_b == None):
                     raise Exception(resultArray_r)
 
                 dataset.GetRasterBand(1).WriteArray(resultArray_r)
@@ -489,10 +486,8 @@ class QgisSkimageMethods:
             dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
             resultArray = self.method_function_call(im)
-            if (resultArray == None):
-                if (task.isCanceled):
-                    self.stopped(task)
-                    return None
+            if (type(resultArray) == str):
+                raise Exception(resultArray)
             dataset.GetRasterBand(1).WriteArray(resultArray)
 
         proj = gdalIm.GetProjection()
