@@ -19,7 +19,10 @@ what kind of data types the method supports for each parameter, if you decide
 to change any default values. If you do not want to change any values you can
 simply leave them as they are or delete the whole string in the edit box.
 If the parameter name will not be correct, the code will take its default
-value, it will only show errors if the value types are not correct
+value, it will only show errors if the value types are not correct. If
+you are skipping parameters, write the values you desire to change in the
+correct order(I.e. gaussian(sigma,cval), don't change the values with
+"cval=10, sigma=10", rather do "sigma=10, cval=10".
 ** The image value does not have to be defined, since you already chose it
 from the dropbox **
 
