@@ -14,15 +14,15 @@ methods to process your Raster Layer
 -> Based on the chosen method, the plugin will show a list of parameters
 in the text field which you can edit. To change the parameters default value
 you have to keep the parameters name and after the '=' add your desired
-value (I.e. "sigma=10"). Keep in mind that the text box on the right says
-what kind of data types the method supports for each parameter, if you decide
-to change any default values. If you do not want to change any values you can
-simply leave them as they are or delete the whole string in the edit box.
-If the parameter name will not be correct, the code will take its default
-value, it will only show errors if the value types are not correct. If
-you are skipping parameters, write the values you desire to change in the
-correct order(I.e. gaussian(sigma,cval), don't change the values with
-"cval=10, sigma=10", rather do "sigma=10, cval=10".
+value (I.e. "sigma=10"), make sure that there are no spaces before and after '='.
+Keep in mind that the text box on the right says what kind of data types the
+method supports for each parameter, if you decide to change any default values.
+If you do not want to change any values you can simply leave them as they are
+or delete the whole string in the edit box. If the parameter name will not be
+correct, the code will take its default value, it will only show errors if the
+value types are not correct. If you are skipping parameters, write the values
+you desire to change in the correct order(I.e. gaussian(sigma,cval), don't change
+the values with "cval=10, sigma=10", rather do "sigma=10, cval=10".
 ** The image value does not have to be defined, since you already chose it
 from the dropbox **
 
