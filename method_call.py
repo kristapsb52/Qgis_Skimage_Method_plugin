@@ -244,17 +244,28 @@ def my_gaussian(image_value, parameter_list):
     try:
         if (parameter_names_string.find("sigma") != -1):
             parameter_list[1][1] = int(parameter_list[1][1])
+    except:
+        return 'Sigma parameter was incorrect'
+    try:
         if (parameter_names_string.find("cval") != -1):
             parameter_list[4][1] = int(parameter_list[4][1])
+    except:
+        return 'cval parameter was incorrect'
+    try:
         if (parameter_names_string.find("truncate") != -1):
             parameter_list[7][1] = float(parameter_list[7][1])
+    except:
+        return 'truncate parameter was incorrect'
+    try:
         if (parameter_names_string.find("multichannel") != -1):
             parameter_list[5][1] = bool(parameter_list[5][1])
-        result = filters.gaussian(image=image_value, sigma=parameter_list[1][1], output=parameter_list[2][1],
-                                  mode=parameter_list[3][1], cval=parameter_list[4][1], multichannel=parameter_list[5][1],
-                                  preserve_range=parameter_list[6][1], truncate=parameter_list[7][1])
     except:
-        QMessageBox.critical(None, "test", "The data type for parameters was incorrect!")
+        return 'multichannel parameter was incorrect'
+
+
+    result = filters.gaussian(image=image_value, sigma=parameter_list[1][1], output=parameter_list[2][1],
+                              mode=parameter_list[3][1], cval=parameter_list[4][1], multichannel=parameter_list[5][1],
+                              preserve_range=parameter_list[6][1], truncate=parameter_list[7][1])
 
     return result * 100
 

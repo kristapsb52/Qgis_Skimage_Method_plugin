@@ -199,16 +199,18 @@ class QgisSkimageMethods:
         # rlayer = QgsRasterLayer(file_path, file_name)
         # QgsProject.instance().addMapLayer(rlayer)
 
-    def completed(self, exception, result=None):
+    def completed(self, exception, result=None ):
+
         if exception is None:
             if result is None:
-                QMessageBox.information(None, "Warning", 'Completed with no exception and no result')
+                QMessageBox.information(None, "Warning", str(exception))
             else:
                 if self.dlg.checkBox.isChecked():
+                    QMessageBox.information(None, "Completed", 'Image processing completed')
                     self.iface.addRasterLayer(result, "Result") # TODO Fix add raster layer
-                else:
-                    QMessageBox.information(None, "Error", "Exception: {}".format(exception)) # TODO What is happening here
-                    raise exception
+        else:
+            QMessageBox.warning(None, "Error", "{}".format(exception))
+            raise exception
 
     def stopped(self, task):
         QgsMessageLog.logMessage(
@@ -445,6 +447,10 @@ class QgisSkimageMethods:
             dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
             resultArray = self.method_function_call(im)
+            if (resultArray == None):
+                if (task.isCanceled):
+                    self.stopped(task)
+                    return None
             dataset.GetRasterBand(1).WriteArray(resultArray)
 
         if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
@@ -466,6 +472,11 @@ class QgisSkimageMethods:
                 resultArray_r = self.method_function_call(im[:, :, 0])
                 resultArray_g = self.method_function_call(im[:, :, 1])
                 resultArray_b = self.method_function_call(im[:, :, 2])
+
+                if (type(resultArray_r) == str or type(resultArray_g) == str or type(resultArray_b) == str):
+                #if (resultArray_r == None or resultArray_g == None or resultArray_b == None):
+                    raise Exception(resultArray_r)
+
                 dataset.GetRasterBand(1).WriteArray(resultArray_r)
                 dataset.GetRasterBand(2).WriteArray(resultArray_g)
                 dataset.GetRasterBand(3).WriteArray(resultArray_b)
@@ -478,6 +489,10 @@ class QgisSkimageMethods:
             dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
 
             resultArray = self.method_function_call(im)
+            if (resultArray == None):
+                if (task.isCanceled):
+                    self.stopped(task)
+                    return None
             dataset.GetRasterBand(1).WriteArray(resultArray)
 
         proj = gdalIm.GetProjection()
@@ -488,11 +503,6 @@ class QgisSkimageMethods:
             dataset.SetProjection(proj)
             dataset.SetGeoTransform(geotrans)
         dataset.FlushCache()
-
-        # self.iface.messageBar().pushMessage(
-        #     "Success", "Output file written at " + file_name,
-        #     level=Qgis.Success, duration=3
-        # )
 
         if (task.isCanceled):
             self.stopped(task)

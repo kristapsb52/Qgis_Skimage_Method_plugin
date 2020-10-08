@@ -9,7 +9,7 @@ either you want to use Segmentation to see the segments of your image, Filter
 to filter the image or Exposure to adjust the images values.
 
 -> After you've chosen your module, the plugin will show the available
-method to process your Raster Layer
+methods to process your Raster Layer
 
 -> Based on the chosen method, the plugin will show a list of parameters
 in the text field which you can edit. To change the parameters default value
@@ -25,9 +25,14 @@ from the dropbox **
 your Raster Layer, click on the 3 dots and select where you wish to
 save your processed image.
 
-If every data type was correct when clicking OK the plugin will start to
-process your image, if a data type was incorrect then the plugin should
-show an error message. Some methods may take time to process your image, but
-that depends on how large is chosen image
+-> If you desire to import the processed image as soon as the process is complete
+check the checkbox below output file to make that possible.
+
+The code will run in the background when OK is pressed, so you will be able
+to do something else if the process time is too long. If every data type
+was correct when clicking OK the plugin will start to process your image,
+if a data type was incorrect then the plugin should show an error message.
+Some methods may take time to process your image, but that depends on how
+large is chosen image.
 
 Thank you for using this plugin!
