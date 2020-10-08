@@ -24,7 +24,7 @@
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QFileDialog, QMessageBox, QDialog, QPushButton
-from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer, QgsCoordinateReferenceSystem
+from qgis.core import QgsProject, QgsRasterFileWriter, QgsRasterPipe, Qgis, QgsMessageLog, QgsRasterLayer, QgsCoordinateReferenceSystem, QgsApplication, QgsTask
 from qgis.utils import iface
 from qgis.gui import QgsDialog
 
@@ -75,6 +75,7 @@ class QgisSkimageMethods:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+        self.tm = QgsApplication.taskManager()
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -198,6 +199,23 @@ class QgisSkimageMethods:
         # rlayer = QgsRasterLayer(file_path, file_name)
         # QgsProject.instance().addMapLayer(rlayer)
 
+    def completed(self, exception, result=None):
+        if exception is None:
+            if result is None:
+                QMessageBox.information(None, "Warning", 'Completed with no exception and no result')
+            else:
+                if self.dlg.checkBox.isChecked():
+                    self.iface.addRasterLayer(result, "Result") # TODO Fix add raster layer
+                else:
+                    QMessageBox.information(None, "Error", "Exception: {}".format(exception)) # TODO What is happening here
+                    raise exception
+
+    def stopped(self, task):
+        QgsMessageLog.logMessage(
+            'Task "{name}" was canceled'.format(
+                name=task.description()),
+            "Wasting time", Qgis.Info)
+
     # Updates the method list for the chosen module
     def update_function_list(self):
         self.dlg.AvailableFunctionsBox.clear()
@@ -265,20 +283,18 @@ class QgisSkimageMethods:
         chosenMethod = self.dlg.AvailableFunctionsBox.currentText()
         method_info = ""
         try:
-            method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
-        except TypeError:
-            self.dlg.Parameters.setText("No arguments for chosen function")
-        except AttributeError:
-            pass
-        except:
             if (self.dlg.ModuleBox.currentIndex() == 0):
                 method_info = inspect.getfullargspec(getattr(filters, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 1):
                 method_info = inspect.getfullargspec(getattr(exposure, chosenMethod))
             elif (self.dlg.ModuleBox.currentIndex() == 2):
                 method_info = inspect.getfullargspec(getattr(segmentation, chosenMethod))
-        # Gets the parameters for method
 
+        except TypeError:
+            self.dlg.Parameters.setText("No arguments for chosen function")
+        except AttributeError:
+            pass
+        # Gets the parameters for method
         return method_info
 
     # Updates the parameters for the chosen method
@@ -401,6 +417,87 @@ class QgisSkimageMethods:
     def close_user_manual(self):
         self.user_manual.close()
 
+    def image_processing(self, task, wait_time):
+        file_name = self.dlg.OutputFile.text()
+
+        # Reads the path of the chosen Raster layer/Image
+        layers = QgsProject.instance().mapLayersByName(self.dlg.RasterLayerBox.currentText())
+        layer_path = layers[0].dataProvider().dataSourceUri()
+        im = imread(layer_path)
+        gdalIm = gdal.Open(layer_path)
+
+        # The path where the user wants to save the image
+
+        x_pixels = im.shape[1]
+        y_pixels = im.shape[0]
+        driver = gdal.GetDriverByName('GTiff')
+        ## TODO Make it so its possible to pass a grayscale image
+        if (self.dlg.AvailableFunctionsBox.currentText() == "slic" or
+                self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
+                self.dlg.AvailableFunctionsBox.currentText() == "felzenszwalb" or
+                self.dlg.AvailableFunctionsBox.currentText() == "inverse_gaussian_gradient" or
+                self.dlg.AvailableFunctionsBox.currentText() == "prewitt" or
+                self.dlg.AvailableFunctionsBox.currentText() == "prewitt_h" or
+                self.dlg.AvailableFunctionsBox.currentText() == "prewitt_v" or
+                self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
+                self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"):
+            im = imread(layer_path, as_gray=True)
+            dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+
+            resultArray = self.method_function_call(im)
+            dataset.GetRasterBand(1).WriteArray(resultArray)
+
+        if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
+                self.dlg.AvailableFunctionsBox.currentText() == "laplace" or
+                self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
+                self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
+                self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
+                self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
+                self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
+                self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
+                self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries" or
+                self.dlg.AvailableFunctionsBox.currentText() == "adjust_gamma" or
+                self.dlg.AvailableFunctionsBox.currentText() == "adjust_log" or
+                self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid" or
+                self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
+            if (im.ndim == 3):
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
+
+                resultArray_r = self.method_function_call(im[:, :, 0])
+                resultArray_g = self.method_function_call(im[:, :, 1])
+                resultArray_b = self.method_function_call(im[:, :, 2])
+                dataset.GetRasterBand(1).WriteArray(resultArray_r)
+                dataset.GetRasterBand(2).WriteArray(resultArray_g)
+                dataset.GetRasterBand(3).WriteArray(resultArray_b)
+            else:
+                dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+                resultArray = self.method_function_call(im)
+                dataset.GetRasterBand(1).WriteArray(resultArray)
+
+        if (self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
+            dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
+
+            resultArray = self.method_function_call(im)
+            dataset.GetRasterBand(1).WriteArray(resultArray)
+
+        proj = gdalIm.GetProjection()
+
+        # If the chosen layer has a projection then add that, to the processed image
+        if proj != "":
+            geotrans = gdalIm.GetGeoTransform()
+            dataset.SetProjection(proj)
+            dataset.SetGeoTransform(geotrans)
+        dataset.FlushCache()
+
+        # self.iface.messageBar().pushMessage(
+        #     "Success", "Output file written at " + file_name,
+        #     level=Qgis.Success, duration=3
+        # )
+
+        if (task.isCanceled):
+            self.stopped(task)
+            return file_name
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -436,87 +533,14 @@ class QgisSkimageMethods:
         self.update_function_list()
         self.update_info_box()
         self.update_parameters()
+
         # show the dialog
         self.dlg.show()
+
         # Run the dialog event loop
         result = self.dlg.exec_()
 
         # See if OK was pressed
         if result:
-            file_name = self.dlg.OutputFile.text()
-
-            # Reads the path of the chosen Raster layer/Image
-            layers = QgsProject.instance().mapLayersByName(self.dlg.RasterLayerBox.currentText())
-            layer_path = layers[0].dataProvider().dataSourceUri()
-            im = imread(layer_path)
-            gdalIm = gdal.Open(layer_path)
-
-
-            # The path where the user wants to save the image
-
-            x_pixels = im.shape[1]
-            y_pixels = im.shape[0]
-            driver = gdal.GetDriverByName('GTiff')
-            ## TODO Make it so its possible to pass a grayscale image
-            if (self.dlg.AvailableFunctionsBox.currentText() == "slic"or
-                    self.dlg.AvailableFunctionsBox.currentText() == "chan_vese" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "felzenszwalb" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "inverse_gaussian_gradient" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_h" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "prewitt_v" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_otsu" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "threshold_local"):
-                im = imread(layer_path, as_gray=True)
-                dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
-
-                resultArray = self.method_function_call(im)
-                dataset.GetRasterBand(1).WriteArray(resultArray)
-
-
-            if (self.dlg.AvailableFunctionsBox.currentText() == "median" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "laplace" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "gaussian" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_h" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "sobel_v" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "unsharp_mask" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "clear_border" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "find_boundaries" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_gamma" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_log" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "adjust_sigmoid" or
-                    self.dlg.AvailableFunctionsBox.currentText() == "equalize_hist"):
-                if (im.ndim == 3):
-                    dataset = driver.Create(file_name, x_pixels, y_pixels, 3, gdal.GDT_Int32)
-
-                    resultArray_r = self.method_function_call(im[:, :, 0])
-                    resultArray_g = self.method_function_call(im[:, :, 1])
-                    resultArray_b = self.method_function_call(im[:, :, 2])
-                    dataset.GetRasterBand(1).WriteArray(resultArray_r)
-                    dataset.GetRasterBand(2).WriteArray(resultArray_g)
-                    dataset.GetRasterBand(3).WriteArray(resultArray_b)
-                else:
-                    dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
-                    resultArray = self.method_function_call(im)
-                    dataset.GetRasterBand(1).WriteArray(resultArray)
-
-            if (self.dlg.AvailableFunctionsBox.currentText() == "quickshift"):
-                dataset = driver.Create(file_name, x_pixels, y_pixels, 1, gdal.GDT_Int32)
-
-                resultArray = self.method_function_call(im)
-                dataset.GetRasterBand(1).WriteArray(resultArray)
-
-            proj = gdalIm.GetProjection()
-
-            # If the chosen layer has a projection then add that, to the processed image
-            if proj != "":
-                geotrans = gdalIm.GetGeoTransform()
-                dataset.SetProjection(proj)
-                dataset.SetGeoTransform(geotrans)
-                dataset.FlushCache()
-
-            self.iface.messageBar().pushMessage(
-                "Success", "Output file written at " + file_name,
-                level=Qgis.Success, duration=3
-            )
+            task = QgsTask.fromFunction("Image processing", self.image_processing, on_finished=self.completed, wait_time=3)
+            self.tm.addTask(task)
